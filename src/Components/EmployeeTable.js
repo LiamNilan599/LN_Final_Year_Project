@@ -4,12 +4,11 @@ import EditEmployee from './EditEmployee';
 import classes from './EmployeeTable.module.css';
 import Back_drop from "../Components/Layout/Back_drop";
 import NewEmployeeModal from '../Components/Layout/NewEmployeeModal';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Fragment } from 'react/cjs/react.production.min';
 
-const EmployeeTable = ({ props, employees }) => {
+const EmployeeTable = ({ employees }) => {
 
-    const [Employees, setEmployees] = useState([]);
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [editEmployeeId, setEditEmployeeId] = useState(null);
 
@@ -24,7 +23,6 @@ const EmployeeTable = ({ props, employees }) => {
 
     const handleEditFormChange = (event) => {
         event.preventDefault();
-
         const fieldName = event.target.getAttribute("name");
         const fieldValue = event.target.value;
 
@@ -34,15 +32,14 @@ const EmployeeTable = ({ props, employees }) => {
         setEditFormData(newFormData);
     };
 
-    function handleDelete(data) {
+    function handleDelete(event, data) {
+        event.preventDefault();
         fetch(
             'https://react-2-21cb7-default-rtdb.europe-west1.firebasedatabase.app/employees/' + data + '.json',
             {
                 method: 'DELETE',
             },
-            alert("Employee removed"),
-            // window.location.reload()
-            // console.log(data)
+            alert("Employee removed")
         );
     }
     const handleEdit = (event, employee) => {
@@ -126,8 +123,6 @@ const EmployeeTable = ({ props, employees }) => {
                 alert("Employee Updated"),
                 console.log(employeeData)
             );
-            setEmployees(employees);
-            //setContacts(newContacts);
             setEditEmployeeId(null);
         }
     };
@@ -150,8 +145,7 @@ const EmployeeTable = ({ props, employees }) => {
                     'Content-Type': 'application/json'
                 }
             },
-            setModalIsOpen(false),
-            // window.location.reload()
+            setModalIsOpen(false)
         );
     }
     return (

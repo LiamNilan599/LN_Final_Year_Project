@@ -41,8 +41,8 @@ const EmployeeItem=({employee,handleEdit,handleDelete}) => {
                 {employee.wage}
             </td>
             <td>
-                <button type="button" onClick={(event) => handleEdit(event,employee)}>Edit</button>
-                <button type="button" onClick={() => handleDelete(employee.id)}>Delete
+                <button type="button" onClick={(event) => handleEdit(event, employee)}>Edit</button>
+                <button type="button" onClick={(event) => handleDelete(event, employee.id)}>Delete
                 </button>
             </td>
         </tr>

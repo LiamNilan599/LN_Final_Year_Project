@@ -7,8 +7,8 @@ function EmployeesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [loadedEmployees, setLoadedEmployees] = useState([]);
 
-  useEffect(() => {
-    setIsLoading(true);
+  //useEffect(() => {
+    // setIsLoading(true);
     fetch(
       'https://react-2-21cb7-default-rtdb.europe-west1.firebasedatabase.app/employees.json'
     )
@@ -27,18 +27,18 @@ function EmployeesPage() {
           employees.push(employee);
         }
 
-        setIsLoading(false);
+        // setIsLoading(false);
         setLoadedEmployees(employees);
       });
-  }, []);
+  //}, []);
 
-  if (isLoading) {
-    return (
-      <section>
-        <p>Loading...</p>
-      </section>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <section>
+  //       <p>Loading...</p>
+  //     </section>
+  //   );
+  // }
 
   return (
     <section>
