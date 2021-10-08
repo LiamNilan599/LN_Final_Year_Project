@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-
+import React from 'react'
 import FavoritesContext from '../Store/favorites-context';
 import MeetupList from '../Components/MeetupList';
 

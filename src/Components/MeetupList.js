@@ -1,6 +1,6 @@
 import MeetupItem from './MeetupItem';
 import classes from './MeetupList.module.css';
-
+import React from 'react'
 function MeetupList(props) {
   return (
     <ul className={classes.list}>

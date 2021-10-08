@@ -1,5 +1,6 @@
 import MainNavigation from './MainNavigation';
 import classes from './Layout.module.css';
+import React from 'react'
 
 function Layout(props) {
   return (
