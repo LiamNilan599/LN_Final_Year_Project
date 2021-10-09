@@ -19,8 +19,8 @@ function NewEmployeeModal(props) {
         const enteredPpsn = ppsnInputRef.current.value;
         const enteredWage = wageInputRef.current.value;
 
-    var numRegex = new RegExp(/^[0-9]+$/);
-    if (enteredName.match(numRegex)) {
+    var letterRegex = new RegExp(/^[a-zA-Z\s]+$/);
+    if (enteredName.match(letterRegex) === null) {
         alert("You must only enter letters in the Name field");
         return false;
       }
@@ -28,11 +28,15 @@ function NewEmployeeModal(props) {
         alert("Age must be filled out");
         return false;
       }
-    else if (enteredRole.match(numRegex)) {
+    else if (enteredRole.match(letterRegex) === null) {
         alert("You must only enter letters in the Role field");
         return false;
       }
-    else if (enteredAge< 18 && enteredWage < 7.14)
+    else if (enteredPpsn.length < 8) {
+        alert("PPSN must be eight digits");
+        return false;
+    }
+    else if (enteredAge < 18 && enteredWage < 7.14)
       {
         alert("Wage must be at least €7.14");
         return false;
