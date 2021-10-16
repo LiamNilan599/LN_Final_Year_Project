@@ -1,5 +1,5 @@
 import EmployeeTable from '../Components/EmployeeTable';
-import { useState, useEffect } from 'react';
+import { useState} from 'react';
 import Card from '../Components/Layout/Card';
 import React from 'react'
 

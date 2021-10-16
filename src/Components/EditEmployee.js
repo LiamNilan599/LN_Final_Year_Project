@@ -40,6 +40,7 @@ const EditEmployee = ({ editData, handleEditFormChange, handleCancelEdit, }) =>
                     placeholder="Enter a PPSN Number..."
                     name="ppsn"
                     value={editData.ppsn}
+                    maxLength="8"
                     onChange={handleEditFormChange}
                 ></input>
             </td>

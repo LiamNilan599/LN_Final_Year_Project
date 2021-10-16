@@ -60,6 +60,51 @@ const EmployeeTable = ({ employees }) => {
         setEditEmployeeId(null);
     };
 
+    function Verification(name, age, role, ppsn, wage) {
+        var letterRegex = new RegExp(/^[a-zA-Z\s]+$/);
+        if (name.match(letterRegex) === null) {
+            alert("You must only enter letters in the Name field");
+            return false;
+        }
+        else if (age === "" || age === null) {
+            alert("Age must be filled out");
+            return false;
+        }
+        else if (role.match(letterRegex) === null) {
+            alert("You must only enter letters in the Role field");
+            return false;
+        }
+        else if (ppsn.length < 8) {
+            alert("PPSN must be eight digits");
+            return false;
+        }
+        else if (age < 18 && wage < 7.14) {
+            alert("Wage must be at least €7.14");
+            return false;
+        }
+        else if (age === 18 && wage < 8.16) {
+            alert("Wage must be at least €8.16");
+            return false;
+        }
+        else if (age === 19 && wage < 9.18) {
+            alert("Wage must be at least €9.18");
+            return false;
+        }
+        else if (age >= 20 && wage < 10.2) {
+            alert("Wage must be at least €10.2");
+            return false;
+        }
+        else {
+            const employeeData = {
+                name: name,
+                age: age,
+                role: role,
+                ppsn: ppsn,
+                wage: wage,
+            };
+            return employeeData;
+        }
+    }
     const handleEditFormSubmit = (event) => {
         event.preventDefault();
 
@@ -72,56 +117,18 @@ const EmployeeTable = ({ employees }) => {
             wage: editData.wage,
         };
 
-        var letterRegex = new RegExp(/^[a-zA-Z\s]+$/);
-        if (data.name.match(letterRegex) === null) {
-            alert("You must only enter letters in the Name field");
-            return false;
-        }
-        else if (data.age === "" || data.age === null) {
-            alert("Age must be filled out");
-            return false;
-        }
-        else if (data.role.match(letterRegex) === null) {
-            alert("You must only enter letters in the Role field");
-            return false;
-        }
-        else if (data.ppsn.length < 8) {
-            alert("PPSN must be eight digits");
-            return false;
-        }
-        else if (data.age < 18 && data.wage < 7.14) {
-            alert("Wage must be at least €7.14");
-            return false;
-        }
-        else if (data.age === 18 && data.wage < 8.16) {
-            alert("Wage must be at least €8.16");
-            return false;
-        }
-        else if (data.age === 19 && data.wage < 9.18) {
-            alert("Wage must be at least €9.18");
-            return false;
-        }
-        else if (data.age >= 20 && data.wage < 10.2) {
-            alert("Wage must be at least €10.2");
+        if (Verification(data.name, data.age, data.role, data.ppsn, data.wage) === false) {
             return false;
         }
         else {
-            const employeeData = {
-                name: data.name,
-                age: data.age,
-                role: data.role,
-                ppsn: data.ppsn,
-                wage: data.wage,
-            };
-
             fetch(
                 'https://react-2-21cb7-default-rtdb.europe-west1.firebasedatabase.app/employees/' + editEmployeeId + '.json',
                 {
                     method: 'PUT',
-                    body: JSON.stringify(employeeData),
+                    body: JSON.stringify(data),
                 },
                 alert("Employee Updated"),
-                console.log(employeeData)
+                console.log(data)
             );
             setEditEmployeeId(null);
         }
@@ -135,18 +142,23 @@ const EmployeeTable = ({ employees }) => {
     }
 
     function addEmployeeHandler(employeeData) {
-        fetch(
-            'https://react-2-21cb7-default-rtdb.europe-west1.firebasedatabase.app/employees.json',
-            {
-                method: 'POST',
-                body: JSON.stringify(employeeData),
-                headers:
+        if (Verification(employeeData.name, employeeData.age, employeeData.role, employeeData.ppsn, employeeData.wage) === false) {
+            return false;
+        }
+        else {
+            fetch(
+                'https://react-2-21cb7-default-rtdb.europe-west1.firebasedatabase.app/employees.json',
                 {
-                    'Content-Type': 'application/json'
-                }
-            },
-            setModalIsOpen(false)
-        );
+                    method: 'POST',
+                    body: JSON.stringify(employeeData),
+                    headers:
+                    {
+                        'Content-Type': 'application/json'
+                    }
+                },
+                setModalIsOpen(false)
+            );
+        }
     }
     return (
         <div className={classes.table}>
