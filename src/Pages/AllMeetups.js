@@ -1,6 +1,6 @@
 import MeetupList from '../Components/MeetupList';
 import { useState, useEffect } from 'react';
-
+import React from 'react'
 // const DUMMY_DATA = [
 //   {
 //     id: 'm1',

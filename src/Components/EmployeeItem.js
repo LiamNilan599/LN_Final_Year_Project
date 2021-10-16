@@ -1,10 +1,11 @@
 import { useContext } from 'react';
 import EmployeesContext from '../Store/employees-context';
+import React from 'react'
 
-function EmployeeItem(props) {
+const EmployeeItem=({employee,handleEdit,handleDelete}) => {
 
-  const employeeCtx = useContext(EmployeesContext);
-  const employeeIsHired = employeeCtx.isEmployee(props.id); // get number of employees for badge
+    const employeeCtx = useContext(EmployeesContext);
+    const employeeIsHired = employeeCtx.isEmployee(employee.id); // get number of employees for badge
     //   const favoritesCtx = useContext(FavoritesContext);
 
     //   const itemIsFavorite = favoritesCtx.itemIsFavorite(props.id);
@@ -22,28 +23,29 @@ function EmployeeItem(props) {
     //       });
     //     }
     //   }
-
     return (
         <tr>
             <td>
-                {props.name}
+                {employee.name}
             </td>
             <td>
-                {props.age}
+                {employee.age}
             </td>
             <td>
-                {props.role}
+                {employee.role}
             </td>
             <td>
-                {props.ppsn}
+                {employee.ppsn}
             </td>
             <td>
-                {props.wage}
+                {employee.wage}
             </td>
             <td>
-                Edit and Delete Button
+                <button type="button" onClick={(event) => handleEdit(event,employee)}>Edit</button>
+                <button type="button" onClick={() => handleDelete(employee.id)}>Delete
+                </button>
             </td>
         </tr>
     );
-}
+};
 export default EmployeeItem;
