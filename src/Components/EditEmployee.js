@@ -1,5 +1,6 @@
 import React from 'react'
-const EditEmployee = ({ editData, handleEditFormChange, handleCancelEdit, }) => 
+//Code is from the following tutorial: Create a Table in React | Learn how to view, add, delete and edit rows in a table from Scratch. Code source: https://github.com/chrisblakely01/react-creating-a-table
+function EditEmployee({ editData, handleEditFormChange, handleCancelEdit, }) 
 {
     return (
         <tr>
@@ -63,4 +64,5 @@ const EditEmployee = ({ editData, handleEditFormChange, handleCancelEdit, }) =>
         </tr>
     );
 }
+//End of tutorial code
 export default EditEmployee;

@@ -9,16 +9,20 @@
   padding: 0 10%;
 }
 
-.logo {
-  font-size: 2rem;
-  color: white;
-  font-weight: bold;
+#logo {
+  display: flex;
+  /* height: 450%;
+  width: 20%; */
+  height: 407px;
+  width: 360px;
 }
-.img{
+/* .img{
   display: flex;
   height: 450%;
-  width: 20%;
-}
+  width: 20%; 
+  height: 407px;
+  width: 360px;
+} */
 
 .header ul {
   list-style: none;

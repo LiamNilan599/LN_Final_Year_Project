@@ -7,9 +7,12 @@ import NewEmployeeModal from '../Components/Layout/NewEmployeeModal';
 import { useState } from 'react';
 import { Fragment } from 'react/cjs/react.production.min';
 
-const EmployeeTable = ({ employees }) => {
+function EmployeeTable({ employees }) 
+{
 
     const [modalIsOpen, setModalIsOpen] = useState(false);
+
+    //Code is from the following tutorial: Create a Table in React | Learn how to view, add, delete and edit rows in a table from Scratch. Code source: https://github.com/chrisblakely01/react-creating-a-table
     const [editEmployeeId, setEditEmployeeId] = useState(null);
 
     const [editData, setEditFormData] = useState(
@@ -21,7 +24,7 @@ const EmployeeTable = ({ employees }) => {
             wage: "",
         });
 
-    const handleEditFormChange = (event) => {
+    function handleEditFormChange(event)  {
         event.preventDefault();
         const fieldName = event.target.getAttribute("name");
         const fieldValue = event.target.value;
@@ -42,7 +45,8 @@ const EmployeeTable = ({ employees }) => {
             alert("Employee removed")
         );
     }
-    const handleEdit = (event, employee) => {
+    function handleEdit(event, employee)
+    {
         event.preventDefault();
         setEditEmployeeId(employee.id);
         const formValues =
@@ -56,10 +60,11 @@ const EmployeeTable = ({ employees }) => {
         setEditFormData(formValues);
     }
 
-    const handleCancelEdit = () => {
+    function handleCancelEdit()
+    {
         setEditEmployeeId(null);
     };
-
+    //End of tutorial code
     function Verification(name, age, role, ppsn, wage) {
         var letterRegex = new RegExp(/^[a-zA-Z\s]+$/);
         if (name.match(letterRegex) === null) {
@@ -105,7 +110,9 @@ const EmployeeTable = ({ employees }) => {
             return employeeData;
         }
     }
-    const handleEditFormSubmit = (event) => {
+    //Code is from the following tutorial: Create a Table in React | Learn how to view, add, delete and edit rows in a table from Scratch. Code source: https://github.com/chrisblakely01/react-creating-a-table
+    function handleEditFormSubmit(event)
+    {
         event.preventDefault();
 
         const data = {
@@ -134,14 +141,17 @@ const EmployeeTable = ({ employees }) => {
         }
     };
 
-    function newEmployeeHandler() {
+    function newEmployeeHandler() 
+    {
         setModalIsOpen(true);
     }
-    function closeModalHandler() {
+    function closeModalHandler() 
+    {
         setModalIsOpen(false);
     }
-
-    function addEmployeeHandler(employeeData) {
+    //End of tutorial code
+    function addEmployeeHandler(employeeData) 
+    {
         if (Verification(employeeData.name, employeeData.age, employeeData.role, employeeData.ppsn, employeeData.wage) === false) {
             return false;
         }
@@ -161,6 +171,7 @@ const EmployeeTable = ({ employees }) => {
         }
     }
     return (
+        //Code is from the following tutorial: Create a Table in React | Learn how to view, add, delete and edit rows in a table from Scratch. Code source: https://github.com/chrisblakely01/react-creating-a-table
         <div className={classes.table}>
             <form onSubmit={handleEditFormSubmit}>
                 <table>
@@ -197,6 +208,7 @@ const EmployeeTable = ({ employees }) => {
                     </tbody>
                 </table>
             </form>
+            {/* End of tutorial code */}
             <div className={classes.actions}>
                 <button className='btn' onClick={newEmployeeHandler}>
                     New Employee

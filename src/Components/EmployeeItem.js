@@ -2,27 +2,11 @@ import { useContext } from 'react';
 import EmployeesContext from '../Store/employees-context';
 import React from 'react'
 
-const EmployeeItem=({employee,handleEdit,handleDelete}) => {
+//Code is from the following tutorial: Create a Table in React | Learn how to view, add, delete and edit rows in a table from Scratch. Code source: https://github.com/chrisblakely01/react-creating-a-table
+function EmployeeItem({employee,handleEdit,handleDelete}) {
 
-    const employeeCtx = useContext(EmployeesContext);
-    const employeeIsHired = employeeCtx.isEmployee(employee.id); // get number of employees for badge
-    //   const favoritesCtx = useContext(FavoritesContext);
-
-    //   const itemIsFavorite = favoritesCtx.itemIsFavorite(props.id);
-
-    //   function toggleFavoriteStatusHandler() {
-    //     if (itemIsFavorite) {
-    //       favoritesCtx.removeFavorite(props.id);
-    //     } else {
-    //       favoritesCtx.addFavorite({
-    //         id: props.id,
-    //         title: props.title,
-    //         description: props.description,
-    //         image: props.image,
-    //         address: props.address,
-    //       });
-    //     }
-    //   }
+    // const employeeCtx = useContext(EmployeesContext);
+    // const employeeIsHired = employeeCtx.isEmployee(employee.id); 
     return (
         <tr>
             <td>
@@ -48,4 +32,5 @@ const EmployeeItem=({employee,handleEdit,handleDelete}) => {
         </tr>
     );
 };
+//End of tutorial code
 export default EmployeeItem;

@@ -10,17 +10,16 @@ function MainNavigation() {
 
   return (
     <header className={classes.header}>
-      <div className={classes.img}>
-        {/* TeamSwipe */}
-        <img src="logo192.png" alt='TeamSwipe Logo'></img>
+      <div>
+        <img src="logo192.png" id="logo" alt='TeamSwipe Logo'></img>
       </div>
       <nav>
         <ul>
           <li>
-            <Link to='/'>Account</Link>
+            <Link to='/new-meetup'>Account</Link>
           </li>
           <li>
-            <Link to='/new-meetup'>Logout</Link>
+            <Link to='/'>Logout</Link>
           </li>
           <li>
             <Link to='/employees'>

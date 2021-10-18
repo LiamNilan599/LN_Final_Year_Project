@@ -1,0 +1,15 @@
+.carousel__slider {
+    padding-left: 25%;
+    padding-right: 25%;
+}
+  
+.carousel__inner-slide {
+    width: 650px;
+    left: 5px;
+    top: 5px;
+}
+
+img {
+    width:650px;
+    height:500px;
+}
