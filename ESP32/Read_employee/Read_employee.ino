@@ -26,7 +26,11 @@ void loop() {
   byte len;
 
   //byte id[] = "-MljZ3kXdtjqiuAvHy5g";
+<<<<<<< HEAD
   char *id[] = {"-MljZ3kXdtjqiuAvHy5g" , "-MmCtDesj_RKooBJq7O3", "-MmX7d-owf1wC1QYIesQ"};
+=======
+  char *id[] = {"-MljZ3kXdtjqiuAvHy5g" , "-MmCtDesj_RKooBJq7O3"};
+>>>>>>> bf1332b (Add a login Page with differnt layout to other pages)
   byte role[] = "Manager         ";
   MFRC522::StatusCode status;
 
@@ -104,7 +108,11 @@ void loop() {
   }
   Serial.print(" ");
   bool authorised = false;
+<<<<<<< HEAD
   for (uint8_t i = 0; i < 3; i++)
+=======
+  for (uint8_t i = 0; i < 2; i++)
+>>>>>>> bf1332b (Add a login Page with differnt layout to other pages)
   {
     if (memcmp ( buffer3, id[i], sizeof(buffer3)) == 0)
     {
