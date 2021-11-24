@@ -4,17 +4,32 @@
 void Erase_rfid()
 {
   Serial.println("waiting for card");
+  //  lcd.clear();
+  //  lcd.setCursor(7, 1);
+  //  lcd.print("No Card");
+  //  lcd.setCursor(3, 3);
+  //  lcd.print("Click to Return");
   // Prepare key - all keys are set to FFFFFFFFFFFFh at chip delivery from the factory.
   MFRC522::MIFARE_Key key;
   for (byte i = 0; i < 6; i++) key.keyByte[i] = 0xFF;
 
   // Look for new cards
   if ( ! mfrc522.PICC_IsNewCardPresent()) {
+    lcd.clear();
+    lcd.setCursor(7, 1);
+    lcd.print("No Card");
+    lcd.setCursor(3, 3);
+    lcd.print("Click to Return");
     return;
   }
 
   // Select one of the cards
   if ( ! mfrc522.PICC_ReadCardSerial()) {
+    lcd.clear();
+    lcd.setCursor(7, 1);
+    lcd.print("No Card");
+    lcd.setCursor(3, 3);
+    lcd.print("Click to Return");
     return;
   }
 
@@ -70,8 +85,8 @@ void Erase_rfid()
     return;
   }
   else Serial.println(F("MIFARE_Write() success: "));
-  memset(buffer,0,sizeof(buffer));
-  
+  memset(buffer, 0, sizeof(buffer));
+
   for (byte i = 0; i < 20; i++) buffer[i] = ' ';     // Fill buffer with spaces
 
   block = 6;
@@ -90,7 +105,15 @@ void Erase_rfid()
     Serial.println(mfrc522.GetStatusCodeName(status));
     return;
   }
-  else Serial.println(F("Data Erased success: "));
+  else
+  {
+    Serial.println(F("Data Erased success: "));
+    lcd.clear();
+    lcd.setCursor(4, 1);
+    lcd.print("Data Erased");
+    lcd.setCursor(3, 3);
+    lcd.print("Click to Return");
+  }
 
   Serial.println(" ");
   mfrc522.PICC_HaltA(); // Halt PICC

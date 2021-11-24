@@ -1,31 +1,22 @@
 #include <SPI.h>
 #include <MFRC522.h>
 
-void Write_employee()
+void WriteTest()
 {
   Serial.println("waiting for card");
-  lcd.clear();
   // Prepare key - all keys are set to FFFFFFFFFFFFh at chip delivery from the factory.
   MFRC522::MIFARE_Key key;
   for (byte i = 0; i < 6; i++) key.keyByte[i] = 0xFF;
 
   // Look for new cards
   if ( ! mfrc522.PICC_IsNewCardPresent()) {
-    lcd.clear();
-    lcd.setCursor(7, 1);
-    lcd.print("No Card");
-    lcd.setCursor(3, 3);
-    lcd.print("Click to Return");
+    Serial.println("Nothing");
     return;
   }
 
   // Select one of the cards
   if ( ! mfrc522.PICC_ReadCardSerial()) {
-    lcd.clear();
-    lcd.setCursor(7, 1);
-    lcd.print("No Card");
-    lcd.setCursor(3, 3);
-    lcd.print("Click to Return");
+    Serial.println("Nothing 2");
     return;
   }
 
@@ -54,11 +45,6 @@ void Write_employee()
   if (status != MFRC522::STATUS_OK) {
     Serial.print(F("PCD_Authenticate() failed: "));
     Serial.println(mfrc522.GetStatusCodeName(status));
-    lcd.clear();
-    lcd.setCursor(5, 1);
-    lcd.print("Card Error");
-    lcd.setCursor(3, 3);
-    lcd.print("Click to Return");
     return;
   }
   else Serial.println(F("PCD_Authenticate() success: "));
@@ -78,11 +64,6 @@ void Write_employee()
   if (status != MFRC522::STATUS_OK) {
     Serial.print(F("PCD_Authenticate() failed: "));
     Serial.println(mfrc522.GetStatusCodeName(status));
-    lcd.clear();
-    lcd.setCursor(5, 1);
-    lcd.print("Card Error");
-    lcd.setCursor(3, 3);
-    lcd.print("Click to Return");
     return;
   }
 
@@ -91,11 +72,6 @@ void Write_employee()
   if (status != MFRC522::STATUS_OK) {
     Serial.print(F("MIFARE_Write() failed: "));
     Serial.println(mfrc522.GetStatusCodeName(status));
-    lcd.clear();
-    lcd.setCursor(5, 1);
-    lcd.print("Card Error");
-    lcd.setCursor(3, 3);
-    lcd.print("Click to Return");
     return;
   }
   else Serial.println(F("MIFARE_Write() success: "));
@@ -111,11 +87,6 @@ void Write_employee()
   if (status != MFRC522::STATUS_OK) {
     Serial.print(F("PCD_Authenticate() failed: "));
     Serial.println(mfrc522.GetStatusCodeName(status));
-    lcd.clear();
-    lcd.setCursor(5, 1);
-    lcd.print("Card Error");
-    lcd.setCursor(3, 3);
-    lcd.print("Click to Return");
     return;
   }
 
@@ -124,22 +95,9 @@ void Write_employee()
   if (status != MFRC522::STATUS_OK) {
     Serial.print(F("MIFARE_Write() failed: "));
     Serial.println(mfrc522.GetStatusCodeName(status));
-    lcd.clear();
-    lcd.setCursor(5, 1);
-    lcd.print("Card Error");
-    lcd.setCursor(3, 3);
-    lcd.print("Click to Return");
     return;
   }
-  else
-  {
-    Serial.println(F("MIFARE_Write() success: "));
-    lcd.clear();
-    lcd.setCursor(4, 1);
-    lcd.print("Data Written");
-    lcd.setCursor(3, 3);
-    lcd.print("Click to Return");
-  }
+  else Serial.println(F("MIFARE_Write() success: "));
 
   Serial.println(" ");
   mfrc522.PICC_HaltA(); // Halt PICC
