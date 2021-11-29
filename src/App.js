@@ -1,24 +1,41 @@
 import { Route, Switch } from 'react-router-dom';
 import React from 'react'
-import AllMeetupsPage from './Pages/AllMeetups';
 import NewMeetupPage from './Pages/NewMeetup';
 import LoginPage from './Pages/LoginPage';
 import EmployeesPage from './Pages/Employees';
 import Layout from './Components/Layout/Layout';
+import { useState } from 'react';
 
 function App() {
+  const [refresh, setRefresh] = useState(false);
+  const [employed, setEmployed] = useState("");
+
+  const globalObject = {
+    setEmployed: function (newText) {
+      setEmployed(newText);
+    },
+    getEmployed: function () {
+      return employed;
+    },
+    refreshApp: function () {
+      setRefresh(() => {
+        return !refresh;
+      });
+    },
+  };
+
+
   return (
-    <Layout>
+    <Layout globalObject={globalObject}>
       <Switch>
         <Route path='/' exact>
-        {/* <AllMeetupsPage /> */}
           <LoginPage />
         </Route>
         <Route path='/new-meetup'>
           <NewMeetupPage />
         </Route>
         <Route path='/employees'>
-          <EmployeesPage />
+          <EmployeesPage globalObject={globalObject}/>
         </Route>
       </Switch>
     </Layout>

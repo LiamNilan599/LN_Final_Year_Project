@@ -5,7 +5,7 @@ import classes from './MainNavigation.module.css';
 // import FavoritesContext from '../../Store/favorites-context';
 import EmployeesContext from '../../Store/employees-context';
 
-function MainNavigation() {
+function MainNavigation(props) {
   const employeesCtx = useContext(EmployeesContext);
 
   return (
@@ -25,7 +25,7 @@ function MainNavigation() {
             <Link to='/employees'>
               My Employees
               <span className={classes.badge}>
-                {employeesCtx.totalEmployees}
+                {props.globalObject.getEmployed()}
               </span>
             </Link>
           </li>

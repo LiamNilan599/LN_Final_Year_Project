@@ -3,7 +3,7 @@ import { useState} from 'react';
 import Card from '../Components/Layout/Card';
 import React from 'react'
 
-function EmployeesPage() {
+function EmployeesPage(props) {
   const [isLoading, setIsLoading] = useState(true);
   const [loadedEmployees, setLoadedEmployees] = useState([]);
 
@@ -26,6 +26,7 @@ function EmployeesPage() {
 
           employees.push(employee);
         }
+        props.globalObject.setEmployed(employees.length)
 
         // setIsLoading(false);
         setLoadedEmployees(employees);

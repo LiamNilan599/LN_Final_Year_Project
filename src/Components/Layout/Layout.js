@@ -11,7 +11,7 @@ function Layout(props) {
     //   backgroundSize: '100% 100%'
     // }}>
     <div>
-      <MainNavigation />
+      <MainNavigation globalObject={props.globalObject}/>
       <main className={classes.main}>{props.children}</main>
     </div>
   );
