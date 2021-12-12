@@ -1,9 +1,6 @@
 #include "WiFi.h"
 #include "SPIFFS.h"
 #include "ESPAsyncWebServer.h"
- 
-const char* ssid = "TP-LINK_7CEE";
-const char* password = "73669722";
 
 const char* http_username = "admin";
 const char* http_password = "admin";
