@@ -4,7 +4,6 @@ import { BrowserRouter } from 'react-router-dom';
 
 import './index.css';
 import App from './App';
-import { FavoritesContextProvider } from './Store/favorites-context';
 import { EmployeesProvider } from './Store/employees-context';
 ReactDOM.render(
   <EmployeesProvider>

@@ -2,7 +2,6 @@ import { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import React from 'react';
 import classes from './MainNavigation.module.css';
-// import FavoritesContext from '../../Store/favorites-context';
 import EmployeesContext from '../../Store/employees-context';
 
 function MainNavigation(props) {
@@ -11,12 +10,12 @@ function MainNavigation(props) {
   return (
     <header className={classes.header}>
       <div>
-        <img src="logo192.png" id="logo" alt='TeamSwipe Logo'></img>
+        <img src="images/logo192.png" id="logo" alt='TeamSwipe Logo'></img>
       </div>
       <nav>
         <ul>
           <li>
-            <Link to='/new-meetup'>Account</Link>
+            <Link to='/account'>Account</Link>
           </li>
           <li>
             <Link to='/'>Logout</Link>

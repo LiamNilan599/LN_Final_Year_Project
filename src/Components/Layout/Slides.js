@@ -1,4 +1,5 @@
 import React from "react";
+//Code is from the following tutorial: https://bestofreactjs.com/repo/express-labs-pure-react-carousel-react-image-gallery. Code source: https://codesandbox.io/s/xxe6l
 import {
     CarouselProvider,
     Slider,
@@ -24,23 +25,23 @@ function Slides()
             <Slider>
                 <Slide index={0}>
                     Employees ever make you feel like this?
-                    <img src="stock.jpg" alt="" />
+                    <img src="images/stock.jpg" alt="" />
                 </Slide>
                 <Slide index={1}>
                     Then TeamSwipe is for you!
-                    <img src="logo192.png" alt="" />
+                    <img src="images/logo192.png" alt="" />
                 </Slide>
                 <Slide index={2}>
                     We Guarantee Customer Satisfaction!
-                    <img src="thumbs.png" alt="" />
+                    <img src="images/thumbs.png" alt="" />
                 </Slide>
                 <Slide index={3}>
                     Increase you team's productivity and cohesion.
-                    <img src="Team.jpg" alt="" />
+                    <img src="images/Team.jpg" alt="" />
                 </Slide>
                 <Slide index={4}>
                     Hire and Fire Employees.
-                    <img src="hire-fire-button.jpg" alt="" />
+                    <img src="images/hire-fire-button.jpg" alt="" />
                 </Slide>
             </Slider>
             <ButtonBack>Back</ButtonBack>
@@ -48,5 +49,5 @@ function Slides()
         </CarouselProvider>
     );
 }
-
 export default Slides;
+//End of tutorial code

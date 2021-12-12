@@ -2,6 +2,8 @@
 #include <MFRC522.h>
 #include <LiquidCrystal_I2C.h>
 #include <Wire.h>
+#include <WiFi.h>
+#include <Firebase_ESP_Client.h>
 
 #if defined(ARDUINO) && ARDUINO >= 100
 #define printByte(args)  write(args);
@@ -9,22 +11,46 @@
 #define printByte(args)  print(args,BYTE);
 #endif
 
-//#define RST_PIN         22           // Configurable, see typical pin layout above
 #define RST_PIN         17           // Configurable, see typical pin layout above
 #define SS_PIN          5          // Configurable, see typical pin layout above
 
-#define ANALOG_PIN 12
+#define UD_PIN 33
+#define RL_PIN 32
 #define J_BTN 13
 
-LiquidCrystal_I2C lcd(0x27, 20, 4); // set the LCD address to 0x27 for a 16 chars and 2 line display
-
-hw_timer_t * timer = NULL;
-portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
+LiquidCrystal_I2C lcd(0x27, 20, 4); // set the LCD address to 0x27 for a 20 chars and 4 line display
 
 MFRC522 mfrc522(SS_PIN, RST_PIN);   // Create MFRC522 instance
 
-int sensorValue = 0, line = 1;        // value read from the pot
-boolean joyStickFlag = false;
+
+//Code is from the following tutorial: ESP32: Getting Started with Firebase (Realtime Database). Code source: https://randomnerdtutorials.com/esp32-firebase-realtime-database/#esp32-read-data-firebase
+//Provide the token generation process info.
+#include "addons/TokenHelper.h"
+//Provide the RTDB payload printing info and other helper functions.
+#include "addons/RTDBHelper.h"
+
+#define WIFI_SSID " "
+#define WIFI_PASSWORD " "
+
+// Insert Firebase project API Key
+#define API_KEY " "
+
+// Insert RTDB URLefine the RTDB URL */
+#define DATABASE_URL " "
+
+//Define Firebase Data object
+FirebaseData fbdo;
+
+FirebaseAuth auth;
+FirebaseConfig config;
+
+boolean joyStickFlag = false, signupOK = false;;
+//End of tutorial code
+
+//Code is from the following tutorial: ESP32 Arduino: Timer interrupts. Code source: https://techtutorialsx.com/2017/10/07/esp32-arduino-timer-interrupts/
+hw_timer_t * timer = NULL;
+portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
+
 //*****************************************************************************************//
 void IRAM_ATTR onTimer()
 { //timer interupt called every 25ms
@@ -33,15 +59,33 @@ void IRAM_ATTR onTimer()
   portEXIT_CRITICAL_ISR(&timerMux);
 
 }
+//*****************************************************************************************//
+
 void setup() {
   timer = timerBegin(0, 80, true);
   timerAttachInterrupt(timer, &onTimer, true);
   timerAlarmWrite(timer, 250000, true);
   timerAlarmEnable(timer);
   //End of tutorial code
-  Serial.begin(115200);                                           // Initialize serial communications with the PC
+
+  Serial.begin(115200);
   SPI.begin();                                                  // Init SPI bus
   mfrc522.PCD_Init();                                              // Init MFRC522 card
+
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  Serial.print("Connecting to Wi-Fi");
+  while (WiFi.status() != WL_CONNECTED) {
+    Serial.print(".");
+    delay(300);
+  }
+  Serial.println();
+  Serial.print("Connected with IP: ");
+  Serial.println(WiFi.localIP());
+  Serial.println();
+
+  Is_signed_in();
+  Get_Database();
+
   Serial.println(F("Read personal data on a MIFARE PICC:"));    //shows in serial that it is ready to read
   lcd.init();                      // initialize the Screen
   lcd.backlight();
@@ -58,9 +102,8 @@ void loop() {
   for (byte i = 0; i < 6; i++) key.keyByte[i] = 0xFF;
 
   //some variables we need
+  String id , dataRole;
   byte block , len;
-  char *id[] = {"-MljZ3kXdtjqiuAvHy5g" , "-MmCtDesj_RKooBJq7O3", "-MmX7d-owf1wC1QYIesQ"};
-  byte role[] = "Manager         ";
   MFRC522::StatusCode status;
 
   //-------------------------------------------
@@ -81,8 +124,6 @@ void loop() {
 
   mfrc522.PICC_DumpDetailsToSerial(&(mfrc522.uid)); //dump some details about the card
 
-  //mfrc522.PICC_DumpToSerial(&(mfrc522.uid));      //uncomment this to see all blocks in hex
-
   //-------------------------------------------
   byte sector = 1;
   Serial.println(F("Current data in sector:"));
@@ -92,12 +133,11 @@ void loop() {
   byte buffer1[16];
   byte buffer2[16];
   byte buffer3[20];
-  byte roleTemp[18];
   byte readRole[16];
+  byte roleTemp[18];
 
   block = 4;
   len = 18;
-
 
   //------------------------------------------- GET ID
   status = mfrc522.PCD_Authenticate(MFRC522::PICC_CMD_MF_AUTH_KEY_A, 4, &key, &(mfrc522.uid)); //line 834 of MFRC522.cpp file
@@ -123,7 +163,7 @@ void loop() {
     return;
   }
 
-  memcpy(buffer3, buffer1, sizeof(buffer1));
+  memmove(buffer3, buffer1, sizeof(buffer1));
   uint8_t w = 0;
   for (uint8_t i = 16; i < 20; i++)
   {
@@ -144,27 +184,45 @@ void loop() {
     return;
   }
 
-  memcpy(readRole, roleTemp, sizeof(readRole));
+  memmove(readRole, roleTemp, sizeof(readRole));
+  dataRole = String((char *)readRole);
+  dataRole = dataRole.substring(0, 16);
+  dataRole.trim();
 
   bool authorised = false;
-  for (uint8_t i = 0; i < 3; i++)
+  if (fbdo.dataType() == "json")
   {
-    if (memcmp ( buffer3, id[i], sizeof(buffer3)) == 0)
+    FirebaseJsonData result;
+
+    id = String((char *)buffer3);
+    id = id.substring(0, 20);
+    FirebaseJson &json = fbdo.to<FirebaseJson>();
+    json.get(result,  id + "/id");
+    Serial.println("id: " + id);
+    Serial.println("db: " + result.to<String>());
+    if (result.success && id.equals( result.to<String>()))
     {
       authorised = true;
-      break;
+    }
+    else
+    {
+      Serial.println("no sucess");
     }
   }
+  FirebaseJsonData result;
+  FirebaseJson &json = fbdo.to<FirebaseJson>();
+  json.get(result,  id + "/role");
 
-  if (memcmp (readRole, role, sizeof(readRole)) == 0)
+  if (dataRole.equals( result.to<String>()) && dataRole.equals("Manager") && authorised == true)
   {
     mfrc522.PICC_HaltA();
     mfrc522.PCD_StopCrypto1();
     char c;
     bool logged = true;
+    json.get(result,  id + "/name");
     lcd.clear();
     lcd.setCursor(0, 0);
-    lcd.print("Hello manager");
+    lcd.print("Hello " + result.to<String>());
     for (uint8_t i = 0; i < 20; i++)
     {
       lcd.setCursor(i, 1);
@@ -178,26 +236,68 @@ void loop() {
       if (digitalRead(J_BTN) == HIGH)
       {
         Print_options();
-        line = 1;
+        int line = 1;
+        int page = 0;
         while (true)
         {
           if (joyStickFlag == true) // check flag
           {
             line = joystick(line);
-            Serial.println(line);
             joyStickFlag = false;//reset flag
           }
           if (digitalRead(J_BTN) == HIGH && line == 1)
           {
-            Write_employee();
-            while(digitalRead(J_BTN) != HIGH){}
+            size_t Length = json.iteratorBegin();
+            FirebaseJson::IteratorValue value;
+            //String List[300];
+            String List[150];
+            int position = 0 , pages;
+            for (size_t i = 0; i < Length; i += 7)
+            {
+              value = json.valueAt(i);
+              List[position] = value.key;
+              position++;
+            }
+            pages = position -3;
+            lcd.clear();
+            while (digitalRead(J_BTN) != HIGH)
+            {
+              if (joyStickFlag == true) // check flag
+              {
+               // page = Print_employees(pages, page, List, json);
+                page = Print_employees(pages, page, List, json);
+                line = joystick(line);
+                joyStickFlag = false;//reset flag
+              }
+            }
+            if (line == 1)
+            {
+              json.get(result,  List[page] + "/role");
+              Serial.println(List[page]);
+              Write_employee(List[page], result.to<String>());
+            }
+            else if (line == 2)
+            {
+              json.get(result,  List[page + 1] + "/role");
+              Serial.println(List[page + 1]);
+              Write_employee(List[page + 1], result.to<String>());
+            }
+            else if (line == 3)
+            {
+              json.get(result,  List[page + 2] + "/role");
+              Serial.println(List[page + 2]);
+              Write_employee(List[page + 2], result.to<String>());
+            }
+            while (digitalRead(J_BTN) != HIGH) {}
+            memset(List, 0, sizeof(List));
             Print_options();
             line = joystick(line);
+            page = 0;
           }
           else if (digitalRead(J_BTN) == HIGH && line == 2)
           {
             Erase_rfid();
-            while(digitalRead(J_BTN) != HIGH){}
+            while (digitalRead(J_BTN) != HIGH) {}
             Print_options();
             line = joystick(line);
           }
@@ -210,21 +310,23 @@ void loop() {
       }
     }
     LCD_init(lcd);
-
+    Get_Database();
   }
 
   else
   {
     if ( authorised == true)
     {
+      json.get(result,  id + "/name");
       lcd.clear();
       lcd.setCursor(0, 1);
-      lcd.print("Hello ");
+      lcd.print("Hello " + result.to<String>());
       for (uint8_t i = 0; i < 20; i++)
       {
         lcd.setCursor(i, 2);
         lcd.print((char)buffer3[i]);
       }
+      Serial.println("Print Checked in/ checked out");
     }
     else
     {
@@ -232,7 +334,7 @@ void loop() {
       lcd.setCursor(1, 1);
       lcd.print("Unauthorised Card");
     }
-    Serial.println("Print Checked in/ checked out");
+
     //show menu for checking money earned
 
 

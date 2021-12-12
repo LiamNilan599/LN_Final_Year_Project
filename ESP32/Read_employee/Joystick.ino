@@ -1,6 +1,6 @@
 int joystick(int line)
 {
-  sensorValue = map(analogRead(ANALOG_PIN), 0, 1023, 0, 255);
+  int sensorValue = map(analogRead(UD_PIN), 0, 1023, 0, 255);        // value read from the pot and line position
   // change the analog out value:
 
   if (sensorValue == 1021)
@@ -18,8 +18,6 @@ int joystick(int line)
     lcd.setCursor(15, line);
     lcd.print("<-");
     return line;
-    //    Serial.print("line = ");
-    //    Serial.println(line);
   }
   else if (sensorValue == 0)
   {

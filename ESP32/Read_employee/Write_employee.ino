@@ -1,7 +1,8 @@
 #include <SPI.h>
 #include <MFRC522.h>
 
-void Write_employee()
+//void Write_employee()
+void Write_employee(String id, String role)
 {
   Serial.println("waiting for card");
   lcd.clear();
@@ -16,6 +17,7 @@ void Write_employee()
     lcd.print("No Card");
     lcd.setCursor(3, 3);
     lcd.print("Click to Return");
+    Serial.println("No Card 1");
     return;
   }
 
@@ -26,6 +28,7 @@ void Write_employee()
     lcd.print("No Card");
     lcd.setCursor(3, 3);
     lcd.print("Click to Return");
+    Serial.println("No Card 2");
     return;
   }
 
@@ -44,8 +47,8 @@ void Write_employee()
   byte len;
 
   Serial.setTimeout(20000L) ;  
-  Serial.println(F("Type ID, ending with #"));
-  len = Serial.readBytesUntil('#', (char *) buffer, 30) ; // read family name from serial
+  id.getBytes(buffer,34);
+  len = id.length();
   for (byte i = len; i < 32; i++) buffer[i] = ' ';     // pad with spaces
 
   block = 4;
@@ -100,9 +103,9 @@ void Write_employee()
   }
   else Serial.println(F("MIFARE_Write() success: "));
   memset(buffer,0,sizeof(buffer));
-  // Ask personal data: First name
-  Serial.println(F("Role, ending with #"));
-  len = Serial.readBytesUntil('#', (char *) buffer, 20) ; // read first name from serial
+  
+  role.getBytes(buffer,34);
+  len = role.length();
   for (byte i = len; i < 20; i++) buffer[i] = ' ';     // pad with spaces
 
   block = 6;

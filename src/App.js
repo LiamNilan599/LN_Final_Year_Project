@@ -1,6 +1,6 @@
 import { Route, Switch } from 'react-router-dom';
 import React from 'react'
-import NewMeetupPage from './Pages/NewMeetup';
+import AccountPage from './Pages/AccountPage';
 import LoginPage from './Pages/LoginPage';
 import EmployeesPage from './Pages/Employees';
 import Layout from './Components/Layout/Layout';
@@ -31,8 +31,8 @@ function App() {
         <Route path='/' exact>
           <LoginPage />
         </Route>
-        <Route path='/new-meetup'>
-          <NewMeetupPage />
+        <Route path='/account'>
+          <AccountPage />
         </Route>
         <Route path='/employees'>
           <EmployeesPage globalObject={globalObject}/>
