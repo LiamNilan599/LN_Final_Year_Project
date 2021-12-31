@@ -16,7 +16,8 @@
 
 #define UD_PIN 33
 #define RL_PIN 32
-#define J_BTN 13
+//#define J_BTN 13
+#define J_BTN 16
 
 LiquidCrystal_I2C lcd(0x27, 20, 4); // set the LCD address to 0x27 for a 20 chars and 4 line display
 
@@ -29,14 +30,14 @@ MFRC522 mfrc522(SS_PIN, RST_PIN);   // Create MFRC522 instance
 //Provide the RTDB payload printing info and other helper functions.
 #include "addons/RTDBHelper.h"
 
-#define WIFI_SSID " "
-#define WIFI_PASSWORD " "
+#define WIFI_SSID "Loans_Phone"
+#define WIFI_PASSWORD "raid1paidrrf"
 
 // Insert Firebase project API Key
-#define API_KEY " "
+#define API_KEY "AIzaSyBUYku_zqKT-3ivgUA4IqTrVf1An0yxwNQ"
 
 // Insert RTDB URLefine the RTDB URL */
-#define DATABASE_URL " "
+#define DATABASE_URL "https://react-2-21cb7-default-rtdb.europe-west1.firebasedatabase.app/"
 
 //Define Firebase Data object
 FirebaseData fbdo;
@@ -233,7 +234,7 @@ void loop() {
 
     while (logged)
     {
-      if (digitalRead(J_BTN) == HIGH)
+      if (digitalRead(J_BTN) == LOW)
       {
         Print_options();
         int line = 1;
@@ -245,7 +246,7 @@ void loop() {
             line = joystick(line);
             joyStickFlag = false;//reset flag
           }
-          if (digitalRead(J_BTN) == HIGH && line == 1)
+          if (digitalRead(J_BTN) == LOW && line == 1)
           {
             size_t Length = json.iteratorBegin();
             FirebaseJson::IteratorValue value;
@@ -260,7 +261,7 @@ void loop() {
             }
             pages = position -3;
             lcd.clear();
-            while (digitalRead(J_BTN) != HIGH)
+            while (digitalRead(J_BTN) != LOW)
             {
               if (joyStickFlag == true) // check flag
               {
@@ -288,20 +289,20 @@ void loop() {
               Serial.println(List[page + 2]);
               Write_employee(List[page + 2], result.to<String>());
             }
-            while (digitalRead(J_BTN) != HIGH) {}
+            while (digitalRead(J_BTN) != LOW) {}
             memset(List, 0, sizeof(List));
             Print_options();
             line = joystick(line);
             page = 0;
           }
-          else if (digitalRead(J_BTN) == HIGH && line == 2)
+          else if (digitalRead(J_BTN) == LOW && line == 2)
           {
             Erase_rfid();
-            while (digitalRead(J_BTN) != HIGH) {}
+            while (digitalRead(J_BTN) != LOW) {}
             Print_options();
             line = joystick(line);
           }
-          else if (digitalRead(J_BTN) == HIGH && line == 3)
+          else if (digitalRead(J_BTN) == LOW && line == 3)
           {
             logged = false;
             break;

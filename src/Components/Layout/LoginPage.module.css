@@ -2,6 +2,7 @@
     float: left;
     width: 50%;
     padding: 10px;
+    overflow: hidden;
   }
   
   .row:after {
@@ -64,9 +65,30 @@
     background-color: #a50e48;
     border-color: #a50e48;
   }
+.slideText
+{
+  text-align: center;
+}
+.slideshow {
+  margin: 10 auto;
+  overflow: hidden;
+}
+.slideshowSlider {
+  white-space: nowrap;
+  transition: ease 1000ms;
+}
 
-  .carousel__container {
-    max-width: 650px;
-    margin: auto;
-    text-align: center;
+.slide {
+  display: inline-block;
+
+  height: 300px;
+  width: 100%;
+}
+.slideshowDots {
+  text-align: center;
+}
+
+img {
+  width:650px;
+  height:500px;
 }
