@@ -16,7 +16,7 @@
 
 #define UD_PIN 33
 #define RL_PIN 32
-//#define J_BTN 13
+
 #define J_BTN 16
 
 LiquidCrystal_I2C lcd(0x27, 20, 4); // set the LCD address to 0x27 for a 20 chars and 4 line display
@@ -45,7 +45,8 @@ FirebaseData fbdo;
 FirebaseAuth auth;
 FirebaseConfig config;
 
-boolean joyStickFlag = false, signupOK = false;;
+boolean joyStickFlag = false, signupOK = false, logged = false;
+int timeCounter = 0;
 //End of tutorial code
 
 //Code is from the following tutorial: ESP32 Arduino: Timer interrupts. Code source: https://techtutorialsx.com/2017/10/07/esp32-arduino-timer-interrupts/
@@ -56,13 +57,20 @@ portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
 void IRAM_ATTR onTimer()
 { //timer interupt called every 25ms
   portENTER_CRITICAL_ISR(&timerMux);
+  timeCounter++;
+  if (timeCounter == 480)
+  {
+    logged = false;
+    timeCounter = 0;
+  }
   joyStickFlag = true;
   portEXIT_CRITICAL_ISR(&timerMux);
 
 }
 //*****************************************************************************************//
 
-void setup() {
+void setup()
+{
   timer = timerBegin(0, 80, true);
   timerAttachInterrupt(timer, &onTimer, true);
   timerAlarmWrite(timer, 250000, true);
@@ -75,7 +83,8 @@ void setup() {
 
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   Serial.print("Connecting to Wi-Fi");
-  while (WiFi.status() != WL_CONNECTED) {
+  while (WiFi.status() != WL_CONNECTED)
+  {
     Serial.print(".");
     delay(300);
   }
@@ -216,10 +225,10 @@ void loop() {
 
   if (dataRole.equals( result.to<String>()) && dataRole.equals("Manager") && authorised == true)
   {
+    timeCounter = 0;
     mfrc522.PICC_HaltA();
     mfrc522.PCD_StopCrypto1();
-    char c;
-    bool logged = true;
+    logged = true;
     json.get(result,  id + "/name");
     lcd.clear();
     lcd.setCursor(0, 0);
@@ -236,6 +245,7 @@ void loop() {
     {
       if (digitalRead(J_BTN) == LOW)
       {
+        timeCounter = 0;
         Print_options();
         int line = 1;
         int page = 0;
@@ -248,9 +258,9 @@ void loop() {
           }
           if (digitalRead(J_BTN) == LOW && line == 1)
           {
+            timeCounter = 0;
             size_t Length = json.iteratorBegin();
             FirebaseJson::IteratorValue value;
-            //String List[300];
             String List[150];
             int position = 0 , pages;
             for (size_t i = 0; i < Length; i += 7)
@@ -259,13 +269,13 @@ void loop() {
               List[position] = value.key;
               position++;
             }
-            pages = position -3;
+            pages = position - 3;
             lcd.clear();
             while (digitalRead(J_BTN) != LOW)
             {
               if (joyStickFlag == true) // check flag
               {
-               // page = Print_employees(pages, page, List, json);
+                // page = Print_employees(pages, page, List, json);
                 page = Print_employees(pages, page, List, json);
                 line = joystick(line);
                 joyStickFlag = false;//reset flag
@@ -297,6 +307,7 @@ void loop() {
           }
           else if (digitalRead(J_BTN) == LOW && line == 2)
           {
+            timeCounter = 0;
             Erase_rfid();
             while (digitalRead(J_BTN) != LOW) {}
             Print_options();
@@ -318,16 +329,30 @@ void loop() {
   {
     if ( authorised == true)
     {
+      timeCounter = 0;
+      mfrc522.PICC_HaltA();
+      mfrc522.PCD_StopCrypto1();
+      logged = true;
       json.get(result,  id + "/name");
       lcd.clear();
-      lcd.setCursor(0, 1);
+      lcd.setCursor(0, 0);
       lcd.print("Hello " + result.to<String>());
       for (uint8_t i = 0; i < 20; i++)
       {
         lcd.setCursor(i, 2);
         lcd.print((char)buffer3[i]);
       }
+      lcd.setCursor(3, 3);
+      lcd.print("Click for Menu");
       Serial.println("Print Checked in/ checked out");
+      while (logged)
+      {
+        if (digitalRead(J_BTN) == LOW)
+        {
+        }
+      }
+      LCD_init(lcd);
+      Get_Database();
     }
     else
     {
@@ -335,27 +360,28 @@ void loop() {
       lcd.setCursor(1, 1);
       lcd.print("Unauthorised Card");
     }
-
-    //show menu for checking money earned
-
-
-    //    Serial.println(memcmp (readRole, role, sizeof(readRole)));
-    //    for (uint8_t i = 0; i < 16; i++)
-    //    {
-    //      if (readRole[i] != 32)
-    //      {
-    //        Serial.write(readRole[i]);
-    //      }
-    //    }
-    //    Serial.println();
-    //    for (uint8_t i = 0; i < 16; i++)
-    //    {
-    //      if (role[i] != 32)
-    //      {
-    //        Serial.write(role[i]);
-    //      }
-    //    }
   }
+
+  //show menu for checking money earned
+
+
+  //    Serial.println(memcmp (readRole, role, sizeof(readRole)));
+  //    for (uint8_t i = 0; i < 16; i++)
+  //    {
+  //      if (readRole[i] != 32)
+  //      {
+  //        Serial.write(readRole[i]);
+  //      }
+  //    }
+  //    Serial.println();
+  //    for (uint8_t i = 0; i < 16; i++)
+  //    {
+  //      if (role[i] != 32)
+  //      {
+  //        Serial.write(role[i]);
+  //      }
+  //    }
+
 
 
   //----------------------------------------
