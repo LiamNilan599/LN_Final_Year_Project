@@ -3,6 +3,7 @@ import classes from '../Components/Layout/LoginPage.module.css';
 import Card from '../Components/Layout/Card';
 
 function LoginPage() {
+  {/* Code is from the following tutorial: How to build an Auto-Playing Slideshow with React. Code source: https://tinloof.com/blog/how-to-build-an-auto-play-slideshow-with-react/*/}
   const Slides = [
     {
       id: 'S1',
@@ -54,6 +55,7 @@ function LoginPage() {
       resetTimeout();
     };
   }, [index, Slides.length]);
+  //End of Tutorial
 
   return (
     <div className={classes.row}>
@@ -83,6 +85,7 @@ function LoginPage() {
             ></div>
           ))}
         </div>
+        {/* End of Tutorial */}
       </div>
       <div className={classes.column}>
         <Card>
