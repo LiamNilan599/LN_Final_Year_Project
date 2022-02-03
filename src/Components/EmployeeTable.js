@@ -7,8 +7,7 @@ import NewEmployeeModal from '../Components/Layout/NewEmployeeModal';
 import { useState } from 'react';
 import { Fragment } from 'react/cjs/react.production.min';
 
-function EmployeeTable({ employees }) 
-{
+function EmployeeTable({ employees, load}) {
 
     const [modalIsOpen, setModalIsOpen] = useState(false);
 
@@ -24,7 +23,7 @@ function EmployeeTable({ employees })
             wage: "",
         });
 
-    function handleEditFormChange(event)  {
+    function handleEditFormChange(event) {
         event.preventDefault();
         const fieldName = event.target.getAttribute("name");
         const fieldValue = event.target.value;
@@ -35,20 +34,27 @@ function EmployeeTable({ employees })
         setEditFormData(newFormData);
     };
 
-    function handleDelete(event, data) {
+    function handleDelete(event, id) {
         event.preventDefault();
         fetch(
-            'https://react-2-21cb7-default-rtdb.europe-west1.firebasedatabase.app/employees/' + data + '.json',
+            'http://localhost:3030/delete',
             {
-                method: 'DELETE',
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id })
             },
             alert("Employee removed")
         );
+        load.setLoaded("delete")
     }
-    function handleEdit(event, employee)
-    {
+    function handleEdit(event, employee) {
+        console.log(employee)
         event.preventDefault();
-        setEditEmployeeId(employee.id);
+        setEditEmployeeId(employee._id);
         const formValues =
         {
             name: employee.name,
@@ -60,8 +66,7 @@ function EmployeeTable({ employees })
         setEditFormData(formValues);
     }
 
-    function handleCancelEdit()
-    {
+    function handleCancelEdit() {
         setEditEmployeeId(null);
     };
     //End of tutorial code
@@ -111,8 +116,7 @@ function EmployeeTable({ employees })
         }
     }
     //Code is from the following tutorial: Create a Table in React | Learn how to view, add, delete and edit rows in a table from Scratch. Code source: https://github.com/chrisblakely01/react-creating-a-table
-    function handleEditFormSubmit(event)
-    {
+    function handleEditFormSubmit(event) {
         event.preventDefault();
 
         const data = {
@@ -129,45 +133,50 @@ function EmployeeTable({ employees })
         }
         else {
             fetch(
-                'https://react-2-21cb7-default-rtdb.europe-west1.firebasedatabase.app/employees/' + editEmployeeId + '.json',
+                'http://localhost:3030/update',
                 {
-                    method: 'PUT',
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
                     body: JSON.stringify(data),
                 },
                 alert("Employee Updated"),
                 console.log(data)
             );
+            load.setLoaded("update")
             setEditEmployeeId(null);
         }
     };
 
-    function newEmployeeHandler() 
-    {
+    function newEmployeeHandler() {
         setModalIsOpen(true);
     }
-    function closeModalHandler() 
-    {
+    function closeModalHandler() {
         setModalIsOpen(false);
     }
     //End of tutorial code
-    function addEmployeeHandler(employeeData) 
-    {
+    function addEmployeeHandler(employeeData) {
         if (Verification(employeeData.name, employeeData.age, employeeData.role, employeeData.ppsn, employeeData.wage) === false) {
             return false;
         }
         else {
             fetch(
-                'https://react-2-21cb7-default-rtdb.europe-west1.firebasedatabase.app/employees.json',
+                'http://localhost:3030/insert',
                 {
                     method: 'POST',
-                    body: JSON.stringify(employeeData),
-                    headers:
-                    {
-                        'Content-Type': 'application/json'
-                    }
+                    mode: 'cors',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(employeeData)
                 },
                 setModalIsOpen(false)
             );
+            load.setLoaded("add")
         }
     }
     return (
@@ -188,9 +197,9 @@ function EmployeeTable({ employees })
                     <tbody>
                         {employees.map((employee) =>
                             <Fragment>
-                                {editEmployeeId === employee.id ? (
+                                {editEmployeeId === employee._id ? (
                                     <EditEmployee
-                                        key={employee.id}
+                                        key={employee._id}
                                         editData={editData}
                                         handleEditFormChange={handleEditFormChange}
                                         handleCancelEdit={handleCancelEdit}

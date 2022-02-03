@@ -26,7 +26,7 @@ function EmployeeItem({employee,handleEdit,handleDelete}) {
             </td>
             <td>
                 <button type="button" onClick={(event) => handleEdit(event, employee)}>Edit</button>
-                <button type="button" onClick={(event) => handleDelete(event, employee.id)}>Delete
+                <button type="button" onClick={(event) => handleDelete(event, employee._id)}>Delete
                 </button>
             </td>
         </tr>

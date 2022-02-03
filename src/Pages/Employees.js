@@ -1,14 +1,16 @@
 import EmployeeTable from '../Components/EmployeeTable';
-import { useState } from 'react';
+import { useState, useEffect} from 'react';
 import Card from '../Components/Layout/Card';
 import React from 'react'
 
 function EmployeesPage(props) {
   const [loadedEmployees, setLoadedEmployees] = useState([]);
+  const [loaded, setLoaded] = useState("");
+  const [refresh, setRefresh] = useState(false);
 
-
+  useEffect(() => {
   fetch(
-    'https://react-2-21cb7-default-rtdb.europe-west1.firebasedatabase.app/employees.json'
+    'http://localhost:3030/get-data'
   )
     .then((response) => {
       return response.json();
@@ -18,7 +20,7 @@ function EmployeesPage(props) {
 
       for (const key in data) {
         const employee = {
-          id: key,
+          _id: key,
           ...data[key]
         };
 
@@ -27,14 +29,27 @@ function EmployeesPage(props) {
       props.globalObject.setEmployed(employees.length)
 
       setLoadedEmployees(employees);
+      setLoaded("NULL")
     });
+  }, [loaded]);
+
+  const load = {
+    setLoaded: function (newText) {
+      setLoaded(newText);
+    },
+    refreshApp: function () {
+      setRefresh(() => {
+        return !refresh;
+      });
+    },
+  };
 
   return (
     <section>
       <h1>Employees</h1>
       <Card>
         <div>
-          <EmployeeTable employees={loadedEmployees} />
+          <EmployeeTable employees={loadedEmployees} load={load} />
         </div>
       </Card>
     </section>
