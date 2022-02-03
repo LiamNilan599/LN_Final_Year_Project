@@ -1,9 +1,8 @@
-import React from 'react'
 import EmployeeItem from './EmployeeItem';
 import EditEmployee from './EditEmployee';
-import classes from './EmployeeTable.module.css';
-import Back_drop from "../Components/Layout/Back_drop";
-import NewEmployeeModal from '../Components/Layout/NewEmployeeModal';
+//import classes from './EmployeeTable.module.css';
+import Back_drop from "./Back_drop";
+import NewEmployeeModal from './NewEmployeeModal';
 import { useState } from 'react';
 import { Fragment } from 'react/cjs/react.production.min';
 
@@ -181,7 +180,8 @@ function EmployeeTable({ employees, load}) {
     }
     return (
         //Code is from the following tutorial: Create a Table in React | Learn how to view, add, delete and edit rows in a table from Scratch. Code source: https://github.com/chrisblakely01/react-creating-a-table
-        <div className={classes.table}>
+        //<div className={classes.table}>
+        <div className="table">
             <form onSubmit={handleEditFormSubmit}>
                 <table>
                     <thead>
@@ -218,7 +218,8 @@ function EmployeeTable({ employees, load}) {
                 </table>
             </form>
             {/* End of tutorial code */}
-            <div className={classes.actions}>
+            {/* </div><div className={classes.actions}> */}
+            <div className="actions">
                 <button className='btn' onClick={newEmployeeHandler}>
                     New Employee
                 </button>

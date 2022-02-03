@@ -1,6 +1,6 @@
-import React from 'react'
-import classes from '../Components/Layout/LoginPage.module.css';
-import Card from '../Components/Layout/Card';
+import classes from './LoginPage.module.css';
+import Card from './layout/Card';
+import { useState, useRef, useEffect} from 'react';
 
 function LoginPage() {
   {/* Code is from the following tutorial: How to build an Auto-Playing Slideshow with React. Code source: https://tinloof.com/blog/how-to-build-an-auto-play-slideshow-with-react/*/}
@@ -31,8 +31,8 @@ function LoginPage() {
       desc: "Hire and Fire Employees.",
     }
   ];
-  const [index, setIndex] = React.useState(0);
-  const timeoutRef = React.useRef(null);
+  const [index, setIndex] = useState(0);
+  const timeoutRef = useRef(null);
   const delay = 3000; //ms delay
 
   function resetTimeout() {
@@ -41,7 +41,7 @@ function LoginPage() {
     }
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     resetTimeout();
     timeoutRef.current = setTimeout(
       () =>
@@ -89,7 +89,7 @@ function LoginPage() {
       </div>
       <div className={classes.column}>
         <Card>
-          <h2>Login</h2>
+          <h2 className={classes.h2}>Login</h2>
           <form className={classes.form}> {/*onSubmit={submitHandler}>*/}
             <div className={classes.control}>
               <label htmlFor='email'>Email</label>
@@ -103,7 +103,7 @@ function LoginPage() {
               <button>Login</button>
             </div>
           </form>
-          <h2>Register Now!</h2>
+          <h2 className={classes.h2}>Register Now!</h2>
 
           <div className={classes.actions}>
             <button className='btn'>

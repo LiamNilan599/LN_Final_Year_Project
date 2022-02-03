@@ -11,7 +11,7 @@
     clear: both;
   }
   
-  h2 {
+  .h2 {
     font-size: 1.5rem;
     color: #2c292b;
     text-align: center;
@@ -88,7 +88,7 @@
   text-align: center;
 }
 
-img {
-  width:650px;
+.img {
+  width:100%;
   height:500px;
 }

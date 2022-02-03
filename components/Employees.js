@@ -1,12 +1,15 @@
-import EmployeeTable from '../Components/EmployeeTable';
+import EmployeeTable from './layout/EmployeeTable';
+import EmployeesContext from '../Store/employees-context';
 import { useState, useEffect} from 'react';
-import Card from '../Components/Layout/Card';
-import React from 'react'
+import { useContext } from 'react';
+import Card from './layout/Card';
 
 function EmployeesPage(props) {
   const [loadedEmployees, setLoadedEmployees] = useState([]);
   const [loaded, setLoaded] = useState("");
   const [refresh, setRefresh] = useState(false);
+
+  const employeeCount = useContext(EmployeesContext);
 
   useEffect(() => {
   fetch(
@@ -26,7 +29,9 @@ function EmployeesPage(props) {
 
         employees.push(employee);
       }
-      props.globalObject.setEmployed(employees.length)
+      employeeCount.update('' + employees.length)
+
+      //props.globalObject.setEmployed(employees.length)
 
       setLoadedEmployees(employees);
       setLoaded("NULL")
