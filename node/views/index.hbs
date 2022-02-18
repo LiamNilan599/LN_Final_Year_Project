@@ -3,39 +3,31 @@
 <section class="insert">
     <h3>Insert Data</h3>
     <form action="/insert" method="post">
-        {{!-- <div class="input">
-            <label for="title">Title</label>
-            <input type="text" id="title" name="title">
+        <div className='control'>
+            <label htmlFor='company'>Company</label>
+            <input type="text" required id='email'id="email" name="email">
         </div>
-        <div class="input">
-            <label for="content">Content</label>
-            <input type="text" id="content" name="content">
-        </div>
-        <div class="input">
-            <label for="author">Author</label>
-            <input type="text" id="author" name="author">
-        </div> --}}
         <div className='control'>
             <label htmlFor='name'>Name</label>
-            <input type='text' required id='name' name="name" />
+            <input type='text' required id='email.name' name="name" />
         </div>
         <div className='control'>
             <label htmlFor='age'>Age</label>
-            <input type='number' required id='age' name="number" />
+            <input type='number' required id='email.age' name="number" />
         </div>
         <div className='control'>
             <label htmlFor='role'>Role</label>
-            <input type='text' required id='role' name="role" />
+            <input type='text' required id='email.role' name="role" />
         </div>
         <div className='control'>
             <label htmlFor='ppsn'>PPSN</label>
-            <input type='text' required id='ppsn' maxLength="8" name="ppsn" />
+            <input type='text' required id='email.ppsn' maxLength="8" name="ppsn" />
         </div>
         <div className='control'>
             <label htmlFor='wage'>Hourly Wage</label>
-            <input type='number' required id='wage' step=".01" name="wage" />
+            <input type='number' required id='email.wage' step=".01" name="wage" />
         </div>
-        <button type="submit">INSERT</button>
+        <button type="submit" onclick="serialize()">INSERT</button>
     </form>
 </section>
 <section class="get">

@@ -1,0 +1,71 @@
+POST http://localhost:4000/login 
+Content-Type: application/json
+
+{
+    "email": "DesMond.com",
+    "password": "RONDAN"
+}
+####
+
+POST http://localhost:4000/token 
+Content-Type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IkRhbWFnZS5jb20iLCJpYXQiOjE2NDUwMTM3NjF9.ND8mQd_IKFYIG5VsuOvogU89xWmp-hcvClauZTQlCXc"
+}
+###
+
+GET  http://localhost:3030/get-data
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IkRlc01vbmQuY29tIiwiaWF0IjoxNjQ1MjkyNjgyLCJleHAiOjE2NDUyOTM1ODJ9.7n2gBc2PRD4Ne3fMzOVdyVjdVYVk84xQg2pLpFwSR00
+
+###
+
+POST   http://localhost:3030/insert-employee
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IkRlc01vbmQuY29tIiwiaWF0IjoxNjQ1MjkyNjgyLCJleHAiOjE2NDUyOTM1ODJ9.7n2gBc2PRD4Ne3fMzOVdyVjdVYVk84xQg2pLpFwSR00
+Content-Type: application/json
+
+{
+    "name": "Janice",
+    "age": "34",
+    "role": "HR",
+    "ppsn": "5556721",
+    "wage": "80.65"
+}
+###
+POST   http://localhost:3030/delete-employee
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IlJvbGFuZF9KUi5jb20iLCJpYXQiOjE2NDUxOTQxMTIsImV4cCI6MTY0NTE5NTAxMn0.WbtgJaUpvq12x-Ix5PqsDuIF9fWUrek5nhesgPajP2c
+Content-Type: application/json
+
+{
+    "id": "620f926c04fc9021a81c9806"
+}
+###
+
+POST   http://localhost:3030/update-employee
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IlJvbGFuZF9KUi5jb20iLCJpYXQiOjE2NDUyMDA2NjEsImV4cCI6MTY0NTIwMTU2MX0.fC8LLE2y814b39W51YCOVK-fDivXit-r2yWybYBXWcU
+Content-Type: application/json
+
+{
+    "id": "620faeb918bce33f6c36d752",
+
+    "name": "Roland",
+    "age": "43",
+    "role": "Manager",
+    "ppsn": "55534461",
+    "wage": "100"
+}
+###
+
+POST   http://localhost:4000/register
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IlJvbGFuZF9KUi5jb20iLCJpYXQiOjE2NDUyMDA2NjEsImV4cCI6MTY0NTIwMTU2MX0.fC8LLE2y814b39W51YCOVK-fDivXit-r2yWybYBXWcU
+Content-Type: application/json
+
+{
+    "email": "Harry.com",
+    "password": "RONDAN4",
+    "name": "Indigo",
+    "age": "23",
+    "role": "Manager",
+    "ppsn": "5558991",
+    "wage": "70"
+}
