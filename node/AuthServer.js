@@ -1,12 +1,13 @@
 //Code is from the following tutorial: JWT Authentication Tutorial - Node.js. Code source: https://github.com/WebDevSimplified/JWT-Authentication
 require('dotenv').config()
+const cors = require('cors');
 const express = require('express')
 const app = express()
 const jwt = require('jsonwebtoken')
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt')
 mongoose.connect('mongodb://127.0.0.1:27017/test');
-
+app.use(cors());
 var Schema = mongoose.Schema;
 
 var EmployeeSchema = new Schema({

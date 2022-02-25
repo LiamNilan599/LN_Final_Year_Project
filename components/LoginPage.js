@@ -1,9 +1,11 @@
 import classes from './LoginPage.module.css';
 import Card from './layout/Card';
-import { useState, useRef, useEffect} from 'react';
+import EmployeesContext from '../Store/employees-context';
+import { useState, useRef, useEffect, useContext } from 'react';
+import Router from 'next/router'
 
 function LoginPage() {
-  {/* Code is from the following tutorial: How to build an Auto-Playing Slideshow with React. Code source: https://tinloof.com/blog/how-to-build-an-auto-play-slideshow-with-react/*/}
+  {/* Code is from the following tutorial: How to build an Auto-Playing Slideshow with React. Code source: https://tinloof.com/blog/how-to-build-an-auto-play-slideshow-with-react/*/ }
   const Slides = [
     {
       id: 'S1',
@@ -34,6 +36,7 @@ function LoginPage() {
   const [index, setIndex] = useState(0);
   const timeoutRef = useRef(null);
   const delay = 3000; //ms delay
+  const UserLogged = useContext(EmployeesContext);
 
   function resetTimeout() {
     if (timeoutRef.current) {
@@ -56,6 +59,54 @@ function LoginPage() {
     };
   }, [index, Slides.length]);
   //End of Tutorial
+
+  const emailInputRef = useRef();
+  const passwordInputRef = useRef();
+
+  function submitHandler(event) {
+    event.preventDefault();
+
+    const enteredEmail = emailInputRef.current.value;
+    const enteredPass = passwordInputRef.current.value;
+
+    const loginData = {
+      email: enteredEmail,
+      password: enteredPass
+    };
+
+    fetch('http://localhost:4000/login',
+      {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(loginData)
+      }
+    )
+      .then((response) => {
+        if (!response.ok) {
+          alert("Invalid email or password")
+        }
+        else {
+          return response.json();
+        }
+      })
+      .then((data) => {
+        localStorage.setItem('token', data.accessToken)//http storage cookie storage
+        localStorage.setItem('refreshToken', data.refreshToken)
+        UserLogged.setNav(true)
+        Router.push('/employees')
+      })
+      .catch((err) => {
+        console.log(err.message);
+       });
+  }
+
+  function newUserHandler() {
+    Router.push('/register')
+  }
 
   return (
     <div className={classes.row}>
@@ -90,14 +141,14 @@ function LoginPage() {
       <div className={classes.column}>
         <Card>
           <h2 className={classes.h2}>Login</h2>
-          <form className={classes.form}> {/*onSubmit={submitHandler}>*/}
+          <form className={classes.form} onSubmit={submitHandler}>
             <div className={classes.control}>
               <label htmlFor='email'>Email</label>
-              <input type='text' required id='email' /> {/*ref={titleInputRef} /> */}
+              <input type='text' required id='email' ref={emailInputRef} />
             </div>
             <div className={classes.control}>
               <label htmlFor='password'>Password</label>
-              <input type='password' required id='password' />{/* ref={imageInputRef} />*/}
+              <input type='password' required id='password' ref={passwordInputRef} />
             </div>
             <div className={classes.actions}>
               <button>Login</button>
@@ -106,7 +157,7 @@ function LoginPage() {
           <h2 className={classes.h2}>Register Now!</h2>
 
           <div className={classes.actions}>
-            <button className='btn'>
+            <button className='btn' onClick={newUserHandler}>
               Get TeamSwipe
             </button>
           </div>

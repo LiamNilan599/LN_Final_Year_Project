@@ -6,8 +6,9 @@ var jwt = require('jsonwebtoken')
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt')
 mongoose.connect('mongodb://127.0.0.1:27017/test');
+const cors = require('cors');
 router.use(express.json())
-
+router.use(cors());
 var Schema = mongoose.Schema;
 
 var EmployeeSchema = new Schema({

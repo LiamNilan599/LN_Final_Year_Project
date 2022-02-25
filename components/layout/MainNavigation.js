@@ -6,18 +6,26 @@ import { useContext } from 'react';
 function MainNavigation(props) {
   const employeeCount = useContext(EmployeesContext);
   let amount = employeeCount.getEmployeeCount()
+
+  function handleLogout() {
+    localStorage.removeItem('token', null)
+    localStorage.removeItem('refreshToken', null)
+    employeeCount.update('' + 0)
+    employeeCount.setNav(false)
+  }
+
   return (
     <header className={classes.header}>
       <div>
         <img className={classes.logo} src="images/logo192.png" id="logo" alt='TeamSwipe Logo'></img>
       </div>
-      <nav>
+      {employeeCount.getNav() ? <nav>
         <ul>
           <li>
             <Link href="/account"><a>Account</a></Link>
           </li>
           <li>
-            <Link href="/"><a>Logout</a></Link>
+            <Link href="/" ><a onClick={handleLogout}>Logout</a></Link>
           </li>
           <li>
             <Link href="/employees">
@@ -29,7 +37,8 @@ function MainNavigation(props) {
               </a></Link>
           </li>
         </ul>
-      </nav>
+      </nav> : <h2>The Leading Employee Management Solution</h2>}
+      
     </header>
   )
 }

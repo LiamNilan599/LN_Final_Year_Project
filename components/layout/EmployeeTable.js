@@ -36,18 +36,25 @@ function EmployeeTable({ employees, load}) {
     function handleDelete(event, id) {
         event.preventDefault();
         fetch(
-            'http://localhost:3030/delete',
+            'http://localhost:3030/delete-employee',
             {
                 method: 'POST',
                 mode: 'cors',
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
+                    Authorization: 'Bearer '+ localStorage.getItem('token')
                 },
                 body: JSON.stringify({ id })
             },
             alert("Employee removed")
-        );
+        )
+        .catch((err) => {
+            console.log(err.message);
+            alert("Timed out. You must login")
+            employeeCount.setNav(false)
+            Router.push('/')
+          });
         load.setLoaded("delete")
     }
     function handleEdit(event, employee) {
@@ -70,6 +77,8 @@ function EmployeeTable({ employees, load}) {
     };
     //End of tutorial code
     function Verification(name, age, role, ppsn, wage) {
+
+        console.log(name + age+ role+ ppsn+ wage )
         var letterRegex = new RegExp(/^[a-zA-Z\s]+$/);
         if (name.match(letterRegex) === null) {
             alert("You must only enter letters in the Name field");
@@ -84,8 +93,8 @@ function EmployeeTable({ employees, load}) {
             return false;
         }
         else if (ppsn.length < 8) {
-            alert("PPSN must be eight digits");
-            return false;
+           alert("PPSN must be eight digits");
+           return false;
         }
         else if (age < 18 && wage < 7.14) {
             alert("Wage must be at least €7.14");
@@ -132,19 +141,26 @@ function EmployeeTable({ employees, load}) {
         }
         else {
             fetch(
-                'http://localhost:3030/update',
+                'http://localhost:3030/update-employee',
                 {
                     method: 'POST',
                     mode: 'cors',
                     headers: {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json',
+                        Authorization: 'Bearer '+ localStorage.getItem('token')
                     },
                     body: JSON.stringify(data),
                 },
                 alert("Employee Updated"),
                 console.log(data)
-            );
+            )
+            .catch((err) => {
+                console.log(err.message);
+                alert("Timed out. You must login")
+                employeeCount.setNav(false)
+                Router.push('/')
+              });
             load.setLoaded("update")
             setEditEmployeeId(null);
         }
@@ -163,18 +179,25 @@ function EmployeeTable({ employees, load}) {
         }
         else {
             fetch(
-                'http://localhost:3030/insert',
+                'http://localhost:3030/insert-employee',
                 {
                     method: 'POST',
                     mode: 'cors',
                     headers: {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json',
+                        Authorization: 'Bearer '+ localStorage.getItem('token')
                     },
                     body: JSON.stringify(employeeData)
                 },
                 setModalIsOpen(false)
-            );
+            )
+            .catch((err) => {
+                console.log(err.message);
+                alert("Timed out. You must login")
+                employeeCount.setNav(false)
+                Router.push('/')
+              });
             load.setLoaded("add")
         }
     }

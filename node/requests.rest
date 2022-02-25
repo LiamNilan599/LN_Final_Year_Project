@@ -21,7 +21,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IkRlc01vb
 ###
 
 POST   http://localhost:3030/insert-employee
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IkRlc01vbmQuY29tIiwiaWF0IjoxNjQ1MjkyNjgyLCJleHAiOjE2NDUyOTM1ODJ9.7n2gBc2PRD4Ne3fMzOVdyVjdVYVk84xQg2pLpFwSR00
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IkRlc01vbmQuY29tIiwiaWF0IjoxNjQ1ODAxNzg4LCJleHAiOjE2NDU4MDI2ODh9.wuuZJFKbD3flsvQMrO9kTyEpEB13DRm3BT2Ic5p_Gec
 Content-Type: application/json
 
 {
@@ -57,7 +57,6 @@ Content-Type: application/json
 ###
 
 POST   http://localhost:4000/register
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IlJvbGFuZF9KUi5jb20iLCJpYXQiOjE2NDUyMDA2NjEsImV4cCI6MTY0NTIwMTU2MX0.fC8LLE2y814b39W51YCOVK-fDivXit-r2yWybYBXWcU
 Content-Type: application/json
 
 {
