@@ -40,7 +40,6 @@ function EmployeesPage(props) {
         console.log(err.message);
         alert("Timed out. You must login")
         employeeCount.setNav(false)
-        Router.push('/')
       });
   }, [loaded]);
 

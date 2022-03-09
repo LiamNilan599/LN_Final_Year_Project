@@ -19,5 +19,5 @@ function AccountPage()
     </section>
   );
 }
-  
-  export default AccountPage;
+
+export default AccountPage;

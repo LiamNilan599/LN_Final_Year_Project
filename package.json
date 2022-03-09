@@ -6,8 +6,9 @@
     "start": "next start -p 3001"
   },
   "dependencies": {
-    "node": "latest",
+    "@nextui-org/react": "^1.0.2-beta.4",
     "next": "latest",
+    "node": "latest",
     "react": "17.0.2",
     "react-dom": "17.0.2"
   }
