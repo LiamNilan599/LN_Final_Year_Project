@@ -1,12 +1,14 @@
 import EmployeeItem from './EmployeeItem';
 import EditEmployee from './EditEmployee';
-//import classes from './EmployeeTable.module.css';
+import classes from './EmployeeTable.module.css';
 import Back_drop from "./Back_drop";
 import NewEmployeeModal from './NewEmployeeModal';
+import Router from 'next/router';
 import { useState } from 'react';
+import { Spacer, Button } from '@nextui-org/react';
 import { Fragment } from 'react/cjs/react.production.min';
 
-function EmployeeTable({ employees, load}) {
+function EmployeeTable({ employees, load }) {
 
     const [modalIsOpen, setModalIsOpen] = useState(false);
 
@@ -35,30 +37,31 @@ function EmployeeTable({ employees, load}) {
 
     function handleDelete(event, id) {
         event.preventDefault();
+        var data = {
+            id: id,
+            token: localStorage.getItem('token')
+          }
         fetch(
-            'http://localhost:3030/delete-employee',
+            'api/deleteEmployee',
             {
                 method: 'POST',
-                mode: 'cors',
                 headers: {
                     'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    Authorization: 'Bearer '+ localStorage.getItem('token')
+                    'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ id })
+                body: JSON.stringify(data)
             },
             alert("Employee removed")
         )
-        .catch((err) => {
-            console.log(err.message);
-            alert("Timed out. You must login")
-            employeeCount.setNav(false)
-            Router.push('/')
-          });
+            .catch((err) => {
+                console.log(err.message);
+                alert("Timed out. You must login")
+                employeeCount.setNav(false)
+                Router.push('/')
+            });
         load.setLoaded("delete")
     }
     function handleEdit(event, employee) {
-        console.log(employee)
         event.preventDefault();
         setEditEmployeeId(employee._id);
         const formValues =
@@ -78,7 +81,6 @@ function EmployeeTable({ employees, load}) {
     //End of tutorial code
     function Verification(name, age, role, ppsn, wage) {
 
-        console.log(name + age+ role+ ppsn+ wage )
         var letterRegex = new RegExp(/^[a-zA-Z\s]+$/);
         if (name.match(letterRegex) === null) {
             alert("You must only enter letters in the Name field");
@@ -93,8 +95,8 @@ function EmployeeTable({ employees, load}) {
             return false;
         }
         else if (ppsn.length < 8) {
-           alert("PPSN must be eight digits");
-           return false;
+            alert("PPSN must be eight digits");
+            return false;
         }
         else if (age < 18 && wage < 7.14) {
             alert("Wage must be at least €7.14");
@@ -134,33 +136,31 @@ function EmployeeTable({ employees, load}) {
             role: editData.role,
             ppsn: editData.ppsn,
             wage: editData.wage,
+            token: localStorage.getItem('token')
         };
 
         if (Verification(data.name, data.age, data.role, data.ppsn, data.wage) === false) {
             return false;
         }
         else {
-            fetch(
-                'http://localhost:3030/update-employee',
+            fetch('api/updateEmployee',
                 {
                     method: 'POST',
                     mode: 'cors',
                     headers: {
                         'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                        Authorization: 'Bearer '+ localStorage.getItem('token')
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(data),
                 },
-                alert("Employee Updated"),
-                console.log(data)
+                alert("Employee Updated")
             )
-            .catch((err) => {
-                console.log(err.message);
-                alert("Timed out. You must login")
-                employeeCount.setNav(false)
-                Router.push('/')
-              });
+                .catch((err) => {
+                    console.log(err.message);
+                    alert("Timed out. You must login")
+                    employeeCount.setNav(false)
+                    Router.push('/')
+                });
             load.setLoaded("update")
             setEditEmployeeId(null);
         }
@@ -178,32 +178,31 @@ function EmployeeTable({ employees, load}) {
             return false;
         }
         else {
+            var data = {employee: employeeData, token : localStorage.getItem('token')}
             fetch(
-                'http://localhost:3030/insert-employee',
+                'api/insertEmployee',
                 {
                     method: 'POST',
                     mode: 'cors',
                     headers: {
                         'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                        Authorization: 'Bearer '+ localStorage.getItem('token')
+                        'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(employeeData)
+                    body: JSON.stringify(data)
                 },
                 setModalIsOpen(false)
             )
-            .catch((err) => {
-                console.log(err.message);
-                alert("Timed out. You must login")
-                employeeCount.setNav(false)
-                Router.push('/')
-              });
+                .catch((err) => {
+                    console.log(err.message);
+                    alert("Timed out. You must login")
+                    employeeCount.setNav(false)
+                    Router.push('/')
+                });
             load.setLoaded("add")
         }
     }
     return (
         //Code is from the following tutorial: Create a Table in React | Learn how to view, add, delete and edit rows in a table from Scratch. Code source: https://github.com/chrisblakely01/react-creating-a-table
-        //<div className={classes.table}>
         <div className="table">
             <form onSubmit={handleEditFormSubmit}>
                 <table>
@@ -219,7 +218,7 @@ function EmployeeTable({ employees, load}) {
                     </thead>
                     <tbody>
                         {employees.map((employee) =>
-                            <Fragment>
+                            <Fragment key={employee._id}>
                                 {editEmployeeId === employee._id ? (
                                     <EditEmployee
                                         key={employee._id}
@@ -241,12 +240,11 @@ function EmployeeTable({ employees, load}) {
                 </table>
             </form>
             {/* End of tutorial code */}
-            {/* </div><div className={classes.actions}> */}
-            <div className="actions">
-                <button className='btn' onClick={newEmployeeHandler}>
-                    New Employee
-                </button>
-            </div>
+            <Spacer y={0.5} />
+
+            <Button className={classes.button} onClick={newEmployeeHandler} size="lg" shadow css={{ backgroundColor: '#008805' }} auto>New Employee</Button>
+
+            <Spacer y={0.5} />
             {modalIsOpen ? <NewEmployeeModal onCancel={closeModalHandler} onAddEmployee={addEmployeeHandler} /> : null}
             {modalIsOpen && <Back_drop onClick={closeModalHandler} />}
         </div>

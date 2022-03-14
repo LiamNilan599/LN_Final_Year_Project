@@ -1,8 +1,28 @@
-import { useRef } from 'react';
-import React from 'react'
+import { useContext, useRef, useState, useEffect } from 'react';
+import { Button, Grid } from '@nextui-org/react';
+import EmployeesContext from '../../Store/employees-context';
+
 function NewEmployeeModal(props) {
+  const [roleText, setRoleText] = useState("");
+  const [wageText, setWageText] = useState("");
+  const [UsePresets, setUsePresets] = useState(false);
+  const UserPresets = useContext(EmployeesContext);
+
+  var loadedPresets = UserPresets.getPresets()
+
   function cancelHandler() {
     props.onCancel();
+  }
+  function presetHandler() {
+    setUsePresets(prevUsePresets => !prevUsePresets);
+    setWageText("")
+  }
+
+  function buttonHandler(event, role, wage) {
+    event.preventDefault();
+    setUsePresets(prevUsePresets => !prevUsePresets);
+    setRoleText(role)
+    setWageText(wage)
   }
 
   const nameInputRef = useRef();
@@ -45,7 +65,16 @@ function NewEmployeeModal(props) {
           </div>
           <div className='control'>
             <label htmlFor='role'>Role</label>
-            <input type='text' required id='role' ref={roleInputRef} />
+            {UsePresets === true ?
+              <Grid.Container justify="center">
+                <Grid>
+                  <Button.Group vertical size="sm">
+                    {loadedPresets.map((preset) =>
+                      <Button css={{ backgroundColor: '#008805' }} key={preset._id} onClick={(event) => buttonHandler(event, preset.role, preset.wage)}>{preset.role}</Button>
+                    )}
+                  </Button.Group>
+                </Grid>
+              </Grid.Container> : <input type='text' required id='role' defaultValue={roleText} ref={roleInputRef} />}
           </div>
           <div className='control'>
             <label htmlFor='ppsn'>PPSN</label>
@@ -53,11 +82,15 @@ function NewEmployeeModal(props) {
           </div>
           <div className='control'>
             <label htmlFor='wage'>Hourly Wage</label>
-            <input type='number' required id='wage' step=".01" ref={wageInputRef} />
+            <input type='number' required id='wage' defaultValue={wageText} step=".01" ref={wageInputRef} />
           </div>
           <div>
-            <button className='btn'>Add Employee</button>
-            <button className='btn' onClick={cancelHandler}>Cancel</button>
+            {/* <button className='btn'>Add Employee</button> */}
+            <Button.Group size="sm">
+              <Button css={{ backgroundColor: '#008805' }} auto>Add Employee</Button>
+              {loadedPresets.length != 0 ? <Button onClick={presetHandler} css={{ backgroundColor: '#008805' }} auto>Use Presets</Button> : <div></div>}
+              <Button onClick={cancelHandler} css={{ backgroundColor: '#008805' }} auto>Cancel</Button>
+            </Button.Group>
           </div>
         </form>
 

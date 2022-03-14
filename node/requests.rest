@@ -7,6 +7,15 @@ Content-Type: application/json
 }
 ####
 
+POST http://localhost:4000/login 
+Content-Type: application/json
+
+{
+    "email": "we@v.com",
+    "password": "4"
+}
+####
+
 POST http://localhost:4000/token 
 Content-Type: application/json
 
@@ -18,6 +27,30 @@ Content-Type: application/json
 GET  http://localhost:3030/get-data
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IkRlc01vbmQuY29tIiwiaWF0IjoxNjQ1MjkyNjgyLCJleHAiOjE2NDUyOTM1ODJ9.7n2gBc2PRD4Ne3fMzOVdyVjdVYVk84xQg2pLpFwSR00
 
+###
+
+GET  http://localhost:3030/get-presets
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IkRlc01vbmQuY29tIiwiaWF0IjoxNjQ3NDMwMzIwLCJleHAiOjE2NDc0MzEyMjB9.7y60ZKaDL_9vxu_dcakuIfPOWeC2ZUjl1lkpoMjUCV4
+
+###
+
+POST   http://localhost:3030/insert-preset
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IkRlc01vbmQuY29tIiwiaWF0IjoxNjQ3NDMxMTA2LCJleHAiOjE2NDc0MzIwMDZ9.ncdXUh8henJKRX79Rbo61LQu5zJSCRlmOmdZ8EHi71E
+Content-Type: application/json
+
+{
+    "role": "HR",
+    "wage": "80.65"
+}
+###
+
+POST   http://localhost:3030/delete-preset
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IkRlc01vbmQuY29tIiwiaWF0IjoxNjQ3NDMyNDQ1LCJleHAiOjE2NDc0MzMzNDV9.2260KJFYph_vhsByaEr46p-ap2jAOoQD5oyFgJeTQ6s
+Content-Type: application/json
+
+{
+    "id": "6231cdd400fe2939b029592c"
+}
 ###
 
 POST   http://localhost:3030/insert-employee
@@ -56,6 +89,7 @@ Content-Type: application/json
 }
 ###
 
+
 POST   http://localhost:4000/register
 Content-Type: application/json
 
@@ -68,3 +102,13 @@ Content-Type: application/json
     "ppsn": "5558991",
     "wage": "70"
 }
+
+###
+POST   http://localhost:3030/delete-account
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IndlQHYuY29tIiwiaWF0IjoxNjQ3OTU3Nzc4LCJleHAiOjE2NDc5NTg2Nzh9.eLPUZ4JTkiHox9xFwdlgFbcIdbfCUzeAjRZI4Ck834o
+Content-Type: application/json
+
+{
+    "password": "4"
+}
+###

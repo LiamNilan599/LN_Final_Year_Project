@@ -2,6 +2,7 @@ import classes from './LoginPage.module.css';
 import Card from './layout/Card';
 import EmployeesContext from '../Store/employees-context';
 import { useState, useRef, useEffect, useContext } from 'react';
+import { Spacer, Button } from '@nextui-org/react';
 import Router from 'next/router'
 
 function LoginPage() {
@@ -74,10 +75,11 @@ function LoginPage() {
       password: enteredPass
     };
 
-    fetch('http://localhost:4000/login',
+    // fetch('http://localhost:4000/login',
+    fetch('api/login',
       {
         method: 'POST',
-        mode: 'cors',
+        //mode: 'cors',
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
@@ -101,7 +103,7 @@ function LoginPage() {
       })
       .catch((err) => {
         console.log(err.message);
-       });
+      });
   }
 
   function newUserHandler() {
@@ -150,17 +152,20 @@ function LoginPage() {
               <label htmlFor='password'>Password</label>
               <input type='password' required id='password' ref={passwordInputRef} />
             </div>
-            <div className={classes.actions}>
-              <button>Login</button>
-            </div>
+
+            <Spacer y={0.5} />
+
+            <Button className={classes.button} size="lg" shadow css={{ backgroundColor: '#008805' }} auto>Login</Button>
+
+            <Spacer y={0.5} />
+
           </form>
           <h2 className={classes.h2}>Register Now!</h2>
+          <Spacer y={0.5} />
 
-          <div className={classes.actions}>
-            <button className='btn' onClick={newUserHandler}>
-              Get TeamSwipe
-            </button>
-          </div>
+          <Button className={classes.button} onClick={newUserHandler} size="lg" shadow css={{ backgroundColor: '#008805' }} auto>Get TeamSwipe</Button>
+
+          <Spacer y={2} />
         </Card>
       </div>
     </div>

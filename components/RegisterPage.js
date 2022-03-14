@@ -2,7 +2,7 @@ import Card from './layout/Card';
 import classes from './RegisterPage.module.css';
 import Router from 'next/router'
 import { useRef } from 'react';
-import React from 'react'
+import { Spacer, Button } from '@nextui-org/react';
 
 function RegisterPage() {
   const emailInputRef = useRef();
@@ -141,7 +141,8 @@ function RegisterPage() {
               <input type='password' required id='pass2' ref={pass2InputRef} />
             </div>
             <div>
-              <button className={classes.actions}>Join Today</button>
+            <Spacer y={2} />
+              <Button className={classes.button} size="lg" shadow css={{ backgroundColor: '#008805' }} auto>Join Today</Button>
             </div>
           </form>
         </div>

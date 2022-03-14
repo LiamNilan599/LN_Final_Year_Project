@@ -7,7 +7,7 @@ function EmployeeItem({employee,handleEdit,handleDelete}) {
     // const employeeCtx = useContext(EmployeesContext);
     // const employeeIsHired = employeeCtx.isEmployee(employee.id); 
     return (
-        <tr>
+        <tr key={employee.key} >
             <td>
                 {employee.name}
             </td>
