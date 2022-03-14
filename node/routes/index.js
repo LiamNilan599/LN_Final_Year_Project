@@ -18,11 +18,16 @@ var EmployeeSchema = new Schema({
   ppsn: String,
   wage: String
 });
+var PresetSchema = new Schema({
+  role: String,
+  wage: String
+});
 
 var UserSchema = new Schema({
   company: String,
   password: String,
-  employees: [EmployeeSchema]
+  employees: [EmployeeSchema],
+  presets: [PresetSchema]
 }, { collection: 'user-data', versionKey: false });
 
 var UserData = mongoose.model('EmployeeData', UserSchema);
@@ -34,6 +39,12 @@ router.get('/', function (req, res, next) {
 router.get('/get-data', authenticateToken, (req, res) => {
   UserData.findOne({ "company": req.email.email }, function (err, doc) {
     res.json(doc.employees);
+  });
+})
+
+router.get('/get-presets', authenticateToken, (req, res) => {
+  UserData.findOne({ "company": req.email.email }, function (err, doc) {
+    res.json(doc.presets);
   });
 })
 
@@ -112,6 +123,33 @@ router.post('/insert-employee', authenticateToken, (req, res, next) => {
   res.redirect('/');
 });
 
+router.post('/insert-preset', authenticateToken, (req, res, next) => {
+
+  UserData.findOneAndUpdate({ "company": req.email.email }, {
+    $push: {
+      "presets": {
+        role: req.body.role,
+        wage: req.body.wage
+      }
+    }
+  }, function (err, docs) {
+    if (err) {
+      console.log(err)
+    }
+  });
+  res.redirect('/');
+});
+
+router.post('/delete-preset', authenticateToken, (req, res, next) => {
+  UserData.findOneAndUpdate({ "company": req.email.email }, { $pull: { "presets": { "_id": req.body.id } } }
+    , function (err, docs) {
+      if (err) {
+        console.log(err)
+      }
+    });
+  res.redirect('/');
+});
+
 router.post('/update', function (req, res, next) {
   var id = req.body.id;
   UserData.findById(id, function (err, doc) {
@@ -142,6 +180,26 @@ router.post('/delete', function (req, res, next) {
   var id = req.body.id;
   UserData.findByIdAndRemove(id).exec();
   res.redirect('/');
+});
+
+router.post('/delete-account', authenticateToken, (req, res) => {
+
+  UserData.findOne({ "company": req.email.email }, async (err, doc) => {
+    try {
+      if (await bcrypt.compare(req.body.password, doc.password)) {
+        var id = doc._id;
+        UserData.findByIdAndRemove(id).exec();
+        res.status(200).send()
+      }
+      else {
+        res.status(400).send('Not Allowed')
+      }
+    }
+    catch
+    {
+      res.status(500).send()
+    }
+  });
 });
 
 router.post('/delete-employee', authenticateToken, (req, res, next) => {

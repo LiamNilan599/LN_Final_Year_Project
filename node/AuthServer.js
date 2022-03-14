@@ -18,10 +18,16 @@ var EmployeeSchema = new Schema({
   wage: String
 });
 
+var PresetSchema = new Schema({
+  role: String,
+  wage: String
+});
+
 var UserSchema = new Schema({
   company: String,
   password: String,
-  employees: [EmployeeSchema]
+  employees: [EmployeeSchema],
+  presets: [PresetSchema]
 }, { collection: 'user-data', versionKey: false });
 
 var UserData = mongoose.model('EmployeeData', UserSchema);

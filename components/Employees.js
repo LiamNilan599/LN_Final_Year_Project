@@ -2,6 +2,7 @@ import EmployeeTable from './layout/EmployeeTable';
 import EmployeesContext from '../Store/employees-context';
 import { useState, useEffect, useContext } from 'react';
 import Link from 'next/link'
+import Router from 'next/router'
 import Card from './layout/Card';
 
 function EmployeesPage(props) {
@@ -39,9 +40,12 @@ function EmployeesPage(props) {
       .catch((err) => {
         console.log(err.message);
         alert("Timed out. You must login")
-        employeeCount.setNav(false)
+        //employeeCount.setNav(false)
+        clearNav()
+        Router.push('/')
       });
   }, [loaded]);
+
 
   const load = {
     setLoaded: function (newText) {
@@ -53,6 +57,10 @@ function EmployeesPage(props) {
       });
     },
   };
+
+  function clearNav() {
+    employeeCount.setNav(false)
+}
 
   return (
     <section>
