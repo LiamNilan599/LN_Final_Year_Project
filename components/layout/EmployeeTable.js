@@ -37,17 +37,19 @@ function EmployeeTable({ employees, load }) {
 
     function handleDelete(event, id) {
         event.preventDefault();
+        var data = {
+            id: id,
+            token: localStorage.getItem('token')
+          }
         fetch(
-            'http://localhost:3030/delete-employee',
+            'api/deleteEmployee',
             {
                 method: 'POST',
-                mode: 'cors',
                 headers: {
                     'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    Authorization: 'Bearer ' + localStorage.getItem('token')
+                    'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ id })
+                body: JSON.stringify(data)
             },
             alert("Employee removed")
         )
@@ -79,7 +81,6 @@ function EmployeeTable({ employees, load }) {
     //End of tutorial code
     function Verification(name, age, role, ppsn, wage) {
 
-        //console.log(name + age+ role+ ppsn+ wage )
         var letterRegex = new RegExp(/^[a-zA-Z\s]+$/);
         if (name.match(letterRegex) === null) {
             alert("You must only enter letters in the Name field");
@@ -135,21 +136,20 @@ function EmployeeTable({ employees, load }) {
             role: editData.role,
             ppsn: editData.ppsn,
             wage: editData.wage,
+            token: localStorage.getItem('token')
         };
 
         if (Verification(data.name, data.age, data.role, data.ppsn, data.wage) === false) {
             return false;
         }
         else {
-            fetch(
-                'http://localhost:3030/update-employee',
+            fetch('api/updateEmployee',
                 {
                     method: 'POST',
                     mode: 'cors',
                     headers: {
                         'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                        Authorization: 'Bearer ' + localStorage.getItem('token')
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(data),
                 },
@@ -178,17 +178,17 @@ function EmployeeTable({ employees, load }) {
             return false;
         }
         else {
+            var data = {employee: employeeData, token : localStorage.getItem('token')}
             fetch(
-                'http://localhost:3030/insert-employee',
+                'api/insertEmployee',
                 {
                     method: 'POST',
                     mode: 'cors',
                     headers: {
                         'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                        Authorization: 'Bearer ' + localStorage.getItem('token')
+                        'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(employeeData)
+                    body: JSON.stringify(data)
                 },
                 setModalIsOpen(false)
             )
@@ -203,7 +203,6 @@ function EmployeeTable({ employees, load }) {
     }
     return (
         //Code is from the following tutorial: Create a Table in React | Learn how to view, add, delete and edit rows in a table from Scratch. Code source: https://github.com/chrisblakely01/react-creating-a-table
-        //<div className={classes.table}>
         <div className="table">
             <form onSubmit={handleEditFormSubmit}>
                 <table>

@@ -13,12 +13,16 @@ function EmployeesPage(props) {
   const employeeCount = useContext(EmployeesContext);
   employeeCount.getLoginState()
   useEffect(() => {
+    var token = JSON.stringify(localStorage.getItem('token'))
     fetch(
-      'http://localhost:3030/get-data',
+      'api/getEmployeeList',
       {
-        headers: { Authorization: 'Bearer ' + localStorage.getItem('token') }
-      }
-    )
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: token
+      })
       .then((response) => {
         return response.json();
       })
@@ -40,7 +44,6 @@ function EmployeesPage(props) {
       .catch((err) => {
         console.log(err.message);
         alert("Timed out. You must login")
-        //employeeCount.setNav(false)
         clearNav()
         Router.push('/')
       });
