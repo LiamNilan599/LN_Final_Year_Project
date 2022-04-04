@@ -45,7 +45,7 @@ export function EmployeesContextProvider(props) {
       .catch((err) => {
         setNav(false)
       });
-  }, []);
+  }, [NavState]);
 
   function setEmployeeCount(newCount) {
     setUserEmployees((oldUserEmployees) => {
@@ -117,6 +117,10 @@ export function EmployeesContextProvider(props) {
     return Presets
   }
 
+  function clearPresets() {
+    setPresets([]);
+}
+
   const context = {
     Employees: userEmployees,
     update: setEmployeeCount,
@@ -126,7 +130,8 @@ export function EmployeesContextProvider(props) {
     getLoginState: getLoginState,
     addPreset: addPreset,
     getPresets: getPresets,
-    removePreset: removePreset
+    removePreset: removePreset,
+    clearPresets : clearPresets
   };
 
   return (

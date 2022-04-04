@@ -10,6 +10,7 @@ function MainNavigation(props) {
   function handleLogout() {
     localStorage.removeItem('token', null)
     localStorage.removeItem('refreshToken', null)
+    employeeCount.clearPresets()
     employeeCount.update('' + 0)
     employeeCount.setNav(false)
   }
