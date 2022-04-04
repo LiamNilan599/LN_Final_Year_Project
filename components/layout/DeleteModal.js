@@ -28,18 +28,17 @@ function DeleteModal(props) {
 
     const passwordData = {
       password: enteredPass1,
-      pass2: enteredPass2
+      pass2: enteredPass2,
+      token: localStorage.getItem('token')
     };
 
     if (Verification(passwordData) == true) {
-      fetch('http://localhost:3030/delete-account',
+      fetch('api/deleteAccount',
         {
           method: 'POST',
-          mode: 'cors',
           headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer ' + localStorage.getItem('token')
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify(passwordData)
         }

@@ -48,13 +48,12 @@ function RegisterPage() {
         wage: enteredWage
       };
 
-      fetch('http://localhost:4000/register',
+      fetch('api/register',
         {
           method: 'POST',
-          mode: 'cors',
           headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify(companyDataFinal)
         }

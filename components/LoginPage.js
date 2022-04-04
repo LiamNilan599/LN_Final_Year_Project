@@ -75,11 +75,9 @@ function LoginPage() {
       password: enteredPass
     };
 
-    // fetch('http://localhost:4000/login',
     fetch('api/login',
       {
         method: 'POST',
-        //mode: 'cors',
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
