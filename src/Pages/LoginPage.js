@@ -1,12 +1,9 @@
-import classes from './LoginPage.module.css';
-import Card from './layout/Card';
-import EmployeesContext from '../Store/employees-context';
-import { useState, useRef, useEffect, useContext } from 'react';
-import { Spacer, Button } from '@nextui-org/react';
-import Router from 'next/router'
+import React from 'react'
+import classes from '../Components/Layout/LoginPage.module.css';
+import Card from '../Components/Layout/Card';
 
 function LoginPage() {
-  {/* Code is from the following tutorial: How to build an Auto-Playing Slideshow with React. Code source: https://tinloof.com/blog/how-to-build-an-auto-play-slideshow-with-react/*/ }
+  {/* Code is from the following tutorial: How to build an Auto-Playing Slideshow with React. Code source: https://tinloof.com/blog/how-to-build-an-auto-play-slideshow-with-react/*/}
   const Slides = [
     {
       id: 'S1',
@@ -20,7 +17,7 @@ function LoginPage() {
     },
     {
       id: 'S3',
-      img: "images/thumbs.jpg",
+      img: "images/thumbs.png",
       desc: "We Guarantee Customer Satisfaction!",
     },
     {
@@ -34,10 +31,9 @@ function LoginPage() {
       desc: "Hire and Fire Employees.",
     }
   ];
-  const [index, setIndex] = useState(0);
-  const timeoutRef = useRef(null);
+  const [index, setIndex] = React.useState(0);
+  const timeoutRef = React.useRef(null);
   const delay = 3000; //ms delay
-  const UserLogged = useContext(EmployeesContext);
 
   function resetTimeout() {
     if (timeoutRef.current) {
@@ -45,7 +41,7 @@ function LoginPage() {
     }
   }
 
-  useEffect(() => {
+  React.useEffect(() => {
     resetTimeout();
     timeoutRef.current = setTimeout(
       () =>
@@ -60,53 +56,6 @@ function LoginPage() {
     };
   }, [index, Slides.length]);
   //End of Tutorial
-
-  const emailInputRef = useRef();
-  const passwordInputRef = useRef();
-
-  function submitHandler(event) {
-    event.preventDefault();
-
-    const enteredEmail = emailInputRef.current.value;
-    const enteredPass = passwordInputRef.current.value;
-
-    const loginData = {
-      email: enteredEmail,
-      password: enteredPass
-    };
-
-    fetch('api/login',
-      {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(loginData)
-      }
-    )
-      .then((response) => {
-        if (!response.ok) {
-          alert("Invalid email or password")
-        }
-        else {
-          return response.json();
-        }
-      })
-      .then((data) => {
-        localStorage.setItem('token', data.accessToken)//http storage cookie storage
-        localStorage.setItem('refreshToken', data.refreshToken)
-        UserLogged.setNav(true)
-        Router.push('/employees')
-      })
-      .catch((err) => {
-        console.log(err.message);
-      });
-  }
-
-  function newUserHandler() {
-    Router.push('/register')
-  }
 
   return (
     <div className={classes.row}>
@@ -140,30 +89,27 @@ function LoginPage() {
       </div>
       <div className={classes.column}>
         <Card>
-          <h2 className={classes.h2}>Login</h2>
-          <form className={classes.form} onSubmit={submitHandler}>
+          <h2>Login</h2>
+          <form className={classes.form}> {/*onSubmit={submitHandler}>*/}
             <div className={classes.control}>
               <label htmlFor='email'>Email</label>
-              <input type='text' required id='email' ref={emailInputRef} />
+              <input type='text' required id='email' /> {/*ref={titleInputRef} /> */}
             </div>
             <div className={classes.control}>
               <label htmlFor='password'>Password</label>
-              <input type='password' required id='password' ref={passwordInputRef} />
+              <input type='password' required id='password' />{/* ref={imageInputRef} />*/}
             </div>
-
-            <Spacer y={0.5} />
-
-            <Button className={classes.button} size="lg" shadow css={{ backgroundColor: '#008805' }} auto>Login</Button>
-
-            <Spacer y={0.5} />
-
+            <div className={classes.actions}>
+              <button>Login</button>
+            </div>
           </form>
-          <h2 className={classes.h2}>Register Now!</h2>
-          <Spacer y={0.5} />
+          <h2>Register Now!</h2>
 
-          <Button className={classes.button} onClick={newUserHandler} size="lg" shadow css={{ backgroundColor: '#008805' }} auto>Get TeamSwipe</Button>
-
-          <Spacer y={2} />
+          <div className={classes.actions}>
+            <button className='btn'>
+              Get TeamSwipe
+            </button>
+          </div>
         </Card>
       </div>
     </div>

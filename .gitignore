@@ -18,6 +18,8 @@ node/node_modules
 
 # misc
 .DS_Store
+config.h
+/node/certificates
 
 # debug
 npm-debug.log*

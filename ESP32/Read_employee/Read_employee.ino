@@ -3,7 +3,11 @@
 #include <LiquidCrystal_I2C.h>
 #include <Wire.h>
 #include <WiFi.h>
-#include <Firebase_ESP_Client.h>
+#include "config.h"
+#include <WiFiClientSecure.h>
+#include <MQTTClient.h> //MQTT Library Source: https://github.com/256dpi/arduino-mqtt
+#include <ArduinoJson.h> //ArduinoJson Library Source: https://github.com/bblanchon/ArduinoJson
+//#include <Firebase_ESP_Client.h>
 
 #if defined(ARDUINO) && ARDUINO >= 100
 #define printByte(args)  write(args);
@@ -26,24 +30,28 @@ MFRC522 mfrc522(SS_PIN, RST_PIN);   // Create MFRC522 instance
 
 //Code is from the following tutorial: ESP32: Getting Started with Firebase (Realtime Database). Code source: https://randomnerdtutorials.com/esp32-firebase-realtime-database/#esp32-read-data-firebase
 //Provide the token generation process info.
-#include "addons/TokenHelper.h"
+//#include "addons/TokenHelper.h"
 //Provide the RTDB payload printing info and other helper functions.
-#include "addons/RTDBHelper.h"
+//#include "addons/RTDBHelper.h"
 
 #define WIFI_SSID "Loans_Phone"
 #define WIFI_PASSWORD "raid1paidrrf"
 
-// Insert Firebase project API Key
-#define API_KEY "AIzaSyBUYku_zqKT-3ivgUA4IqTrVf1An0yxwNQ"
+WiFiClientSecure wifi_client = WiFiClientSecure();
+MQTTClient mqtt_client = MQTTClient(256); //256 indicates the maximum size for packets being published and received.
 
-// Insert RTDB URLefine the RTDB URL */
-#define DATABASE_URL "https://react-2-21cb7-default-rtdb.europe-west1.firebasedatabase.app/"
-
-//Define Firebase Data object
-FirebaseData fbdo;
-
-FirebaseAuth auth;
-FirebaseConfig config;
+String Data_Payload;
+//// Insert Firebase project API Key
+//#define API_KEY "AIzaSyBUYku_zqKT-3ivgUA4IqTrVf1An0yxwNQ"
+//
+//// Insert RTDB URLefine the RTDB URL */
+//#define DATABASE_URL "https://react-2-21cb7-default-rtdb.europe-west1.firebasedatabase.app/"
+//
+////Define Firebase Data object
+//FirebaseData fbdo;
+//
+//FirebaseAuth auth;
+//FirebaseConfig config;
 
 boolean joyStickFlag = false, signupOK = false, logged = false;
 int timeCounter = 0;
@@ -69,6 +77,13 @@ void IRAM_ATTR onTimer()
 }
 //*****************************************************************************************//
 
+void incomingMessageHandler(String &topic, String &payload) {
+  Serial.println("Message received!");
+  Serial.println("Topic: " + topic);
+  Serial.println("Payload: " + payload);
+  Data_Payload = payload;
+}
+
 void setup()
 {
   timer = timerBegin(0, 80, true);
@@ -93,7 +108,7 @@ void setup()
   Serial.println(WiFi.localIP());
   Serial.println();
 
-  Is_signed_in();
+  AWSConnect();
   Get_Database();
 
   Serial.println(F("Read personal data on a MIFARE PICC:"));    //shows in serial that it is ready to read
@@ -200,167 +215,173 @@ void loop() {
   dataRole.trim();
 
   bool authorised = false;
-  if (fbdo.dataType() == "json")
-  {
-    FirebaseJsonData result;
+  Serial.println("Payload: " + Data_Payload);
+  //if (fbdo.dataType() == "json")
+  //{
+    //FirebaseJsonData result;
 
     id = String((char *)buffer3);
     id = id.substring(0, 20);
-    FirebaseJson &json = fbdo.to<FirebaseJson>();
-    json.get(result,  id + "/id");
-    Serial.println("id: " + id);
-    Serial.println("db: " + result.to<String>());
-    if (result.success && id.equals( result.to<String>()))
-    {
+    //FirebaseJson &json = fbdo.to<FirebaseJson>();
+    //json.get(result,  id + "/id");
+    //Serial.println("id: " + id);
+    //Serial.println("db: " + result.to<String>());
+    //if (result.success && id.equals( result.to<String>()))
+    //{
       authorised = true;
-    }
-    else
-    {
-      Serial.println("no sucess");
-    }
-  }
-  FirebaseJsonData result;
-  FirebaseJson &json = fbdo.to<FirebaseJson>();
-  json.get(result,  id + "/role");
+    //}
+    //else
+    //{
+    //  Serial.println("no sucess");
+    //}
+  //}
+ // FirebaseJsonData result;
+  //FirebaseJson &json = fbdo.to<FirebaseJson>();
+  //json.get(result,  id + "/role");
 
-  if (dataRole.equals( result.to<String>()) && dataRole.equals("Manager") && authorised == true)
-  {
-    timeCounter = 0;
-    mfrc522.PICC_HaltA();
-    mfrc522.PCD_StopCrypto1();
-    logged = true;
-    json.get(result,  id + "/name");
-    lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("Hello " + result.to<String>());
-    for (uint8_t i = 0; i < 20; i++)
-    {
-      lcd.setCursor(i, 1);
-      lcd.print((char)buffer3[i]);
-    }
-    lcd.setCursor(3, 3);
-    lcd.print("Click for Menu");
+  //if (dataRole.equals( result.to<String>()) && dataRole.equals("Manager") && authorised == true)
+//  if (dataRole.equals("Manager") && authorised == true)
+//  {
+//    timeCounter = 0;
+//    mfrc522.PICC_HaltA();
+//    mfrc522.PCD_StopCrypto1();
+//    logged = true;
+//    //json.get(result,  id + "/name");
+//    lcd.clear();
+//    lcd.setCursor(0, 0);
+//    //lcd.print("Hello " + result.to<String>());
+//    for (uint8_t i = 0; i < 20; i++)
+//    {
+//      lcd.setCursor(i, 1);
+//      lcd.print((char)buffer3[i]);
+//    }
+//    lcd.setCursor(3, 3);
+//    lcd.print("Click for Menu");
+//  }
+//
+//    while (logged)
+//    {
+//      if (digitalRead(J_BTN) == LOW)
+//      {
+//        while (digitalRead(J_BTN) != HIGH)
+//        timeCounter = 0;
+//        Print_options();
+//        int line = 1;
+//        int page = 0;
+//        while (true)
+//        {
+//          if (joyStickFlag == true) // check flag
+//          {
+//            line = joystick(line);
+//            joyStickFlag = false;//reset flag
+//          }
+//          if (digitalRead(J_BTN) == LOW && line == 1)
+//          {
+//            while (digitalRead(J_BTN) != HIGH)
+//            timeCounter = 0;
+////            size_t Length = json.iteratorBegin();
+////            FirebaseJson::IteratorValue value;
+//            String List[150];
+//            int position = 0 , pages;
+//            for (size_t i = 0; i < Length; i += 7)
+//            {
+//              value = json.valueAt(i);
+//              List[position] = value.key;
+//              position++;
+//            }
+//            pages = position - 3;
+//            lcd.clear();
+//            while (digitalRead(J_BTN) != LOW)
+//            {
+//              if (joyStickFlag == true) // check flag
+//              {
+//                // page = Print_employees(pages, page, List, json);
+//                page = Print_employees(pages, page, List, json);
+//                line = joystick(line);
+//                joyStickFlag = false;//reset flag
+//              }
+//            }
+//            if (line == 1)
+//            {
+//              json.get(result,  List[page] + "/role");
+//              Serial.println(List[page]);
+//              Write_employee(List[page], result.to<String>());
+//            }
+//            else if (line == 2)
+//            {
+//              json.get(result,  List[page + 1] + "/role");
+//              Serial.println(List[page + 1]);
+//              Write_employee(List[page + 1], result.to<String>());
+//            }
+//            else if (line == 3)
+//            {
+//              json.get(result,  List[page + 2] + "/role");
+//              Serial.println(List[page + 2]);
+//              Write_employee(List[page + 2], result.to<String>());
+//            }
+//            while (digitalRead(J_BTN) != LOW) 
+//            while (digitalRead(J_BTN) != HIGH)
+//            memset(List, 0, sizeof(List));
+//            Print_options();
+//            line = joystick(line);
+//            page = 0;
+//          }
+//          else if (digitalRead(J_BTN) == LOW && line == 2)
+//          {
+//            timeCounter = 0;
+//            Erase_rfid();
+//            while (digitalRead(J_BTN) != LOW) {}
+//            Print_options();
+//            line = joystick(line);
+//          }
+//          else if (digitalRead(J_BTN) == LOW && line == 3)
+//          {
+//            logged = false;
+//            break;
+//          }
+//        }
+//      }
+//    }
+//    LCD_init(lcd);
+////    Get_Database();
+//  }
 
-    while (logged)
-    {
-      if (digitalRead(J_BTN) == LOW)
-      {
-        timeCounter = 0;
-        Print_options();
-        int line = 1;
-        int page = 0;
-        while (true)
-        {
-          if (joyStickFlag == true) // check flag
-          {
-            line = joystick(line);
-            joyStickFlag = false;//reset flag
-          }
-          if (digitalRead(J_BTN) == LOW && line == 1)
-          {
-            timeCounter = 0;
-            size_t Length = json.iteratorBegin();
-            FirebaseJson::IteratorValue value;
-            String List[150];
-            int position = 0 , pages;
-            for (size_t i = 0; i < Length; i += 7)
-            {
-              value = json.valueAt(i);
-              List[position] = value.key;
-              position++;
-            }
-            pages = position - 3;
-            lcd.clear();
-            while (digitalRead(J_BTN) != LOW)
-            {
-              if (joyStickFlag == true) // check flag
-              {
-                // page = Print_employees(pages, page, List, json);
-                page = Print_employees(pages, page, List, json);
-                line = joystick(line);
-                joyStickFlag = false;//reset flag
-              }
-            }
-            if (line == 1)
-            {
-              json.get(result,  List[page] + "/role");
-              Serial.println(List[page]);
-              Write_employee(List[page], result.to<String>());
-            }
-            else if (line == 2)
-            {
-              json.get(result,  List[page + 1] + "/role");
-              Serial.println(List[page + 1]);
-              Write_employee(List[page + 1], result.to<String>());
-            }
-            else if (line == 3)
-            {
-              json.get(result,  List[page + 2] + "/role");
-              Serial.println(List[page + 2]);
-              Write_employee(List[page + 2], result.to<String>());
-            }
-            while (digitalRead(J_BTN) != LOW) {}
-            memset(List, 0, sizeof(List));
-            Print_options();
-            line = joystick(line);
-            page = 0;
-          }
-          else if (digitalRead(J_BTN) == LOW && line == 2)
-          {
-            timeCounter = 0;
-            Erase_rfid();
-            while (digitalRead(J_BTN) != LOW) {}
-            Print_options();
-            line = joystick(line);
-          }
-          else if (digitalRead(J_BTN) == LOW && line == 3)
-          {
-            logged = false;
-            break;
-          }
-        }
-      }
-    }
-    LCD_init(lcd);
-    Get_Database();
-  }
-
-  else
-  {
-    if ( authorised == true)
-    {
-      timeCounter = 0;
-      mfrc522.PICC_HaltA();
-      mfrc522.PCD_StopCrypto1();
-      logged = true;
-      json.get(result,  id + "/name");
-      lcd.clear();
-      lcd.setCursor(0, 0);
-      lcd.print("Hello " + result.to<String>());
-      for (uint8_t i = 0; i < 20; i++)
-      {
-        lcd.setCursor(i, 2);
-        lcd.print((char)buffer3[i]);
-      }
-      lcd.setCursor(3, 3);
-      lcd.print("Click for Menu");
-      Serial.println("Print Checked in/ checked out");
-      while (logged)
-      {
-        if (digitalRead(J_BTN) == LOW)
-        {
-        }
-      }
-      LCD_init(lcd);
-      Get_Database();
-    }
-    else
-    {
-      lcd.clear();
-      lcd.setCursor(1, 1);
-      lcd.print("Unauthorised Card");
-    }
-  }
+//  else
+//  {
+//    if ( authorised == true)
+//    {
+//      timeCounter = 0;
+//      mfrc522.PICC_HaltA();
+//      mfrc522.PCD_StopCrypto1();
+//      logged = true;
+//      json.get(result,  id + "/name");
+//      lcd.clear();
+//      lcd.setCursor(0, 0);
+//      lcd.print("Hello " + result.to<String>());
+//      for (uint8_t i = 0; i < 20; i++)
+//      {
+//        lcd.setCursor(i, 2);
+//        lcd.print((char)buffer3[i]);
+//      }
+//      lcd.setCursor(3, 3);
+//      lcd.print("Click for Menu");
+//      Serial.println("Print Checked in/ checked out");
+//      while (logged)
+//      {
+//        if (digitalRead(J_BTN) == LOW)
+//        {
+//        }
+//      }
+//      LCD_init(lcd);
+//      Get_Database();
+//    }
+//    else
+//    {
+//      lcd.clear();
+//      lcd.setCursor(1, 1);
+//      lcd.print("Unauthorised Card");
+//    }
+//  }
 
   //show menu for checking money earned
 

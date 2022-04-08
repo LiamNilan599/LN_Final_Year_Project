@@ -7,13 +7,8 @@ Content-Type: application/json
 }
 ####
 
-POST http://localhost:4000/login 
-Content-Type: application/json
+GET http://localhost:3030/
 
-{
-    "email": "we@v.com",
-    "password": "4"
-}
 ####
 
 POST http://localhost:4000/token 
@@ -25,7 +20,7 @@ Content-Type: application/json
 ###
 
 GET  http://localhost:3030/get-data
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IkRlc01vbmQuY29tIiwiaWF0IjoxNjQ1MjkyNjgyLCJleHAiOjE2NDUyOTM1ODJ9.7n2gBc2PRD4Ne3fMzOVdyVjdVYVk84xQg2pLpFwSR00
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IkRlc01vbmQuY29tIiwiaWF0IjoxNjQ5MjYyNzU4LCJleHAiOjE2NDkyNjM2NTh9.kGfYNURQtFoYv7ZnMCiHCgkRkwlt9JXYqO3bOWyIh3A
 
 ###
 
