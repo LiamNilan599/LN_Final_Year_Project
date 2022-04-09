@@ -17,7 +17,10 @@ var EmployeeSchema = new Schema({
   age: String,
   role: String,
   ppsn: String,
-  wage: String
+  wage: { type: Number },
+  working: Boolean,
+  totalPay: Number,
+  startTime: { type: Number }
 });
 var PresetSchema = new Schema({
   role: String,
@@ -37,10 +40,9 @@ let device = awsIot.device({
   keyPath: './certificates/86289fca2101af52f1e066a37a13b0a8cfd8590ca1d68a3c46c86d008d130f6d-private.pem.key',
   certPath: './certificates/86289fca2101af52f1e066a37a13b0a8cfd8590ca1d68a3c46c86d008d130f6d-certificate.pem.crt',
   caPath: './certificates/AmazonRootCA1.pem',
-  clientId: 'Liam', // Your own device name . . . whatever you like
-  host: 'a3fozwp9y1aejf-ats.iot.us-east-1.amazonaws.com', // your IOT setup
+  clientId: 'Liam',
+  host: 'a3fozwp9y1aejf-ats.iot.us-east-1.amazonaws.com',
   debug: true
-  // port: 8883
 });
 
 device
@@ -48,11 +50,59 @@ device
     console.log("STEP - Connecting to AWS  IoT Core");
     console.log("---------------------------------------------------------------------------------")
     device.subscribe("TeamSwipe_ESP32/pub");
+    device.subscribe("TeamSwipe_ESP32/request-employee-array");
+    device.subscribe("TeamSwipe_ESP32/clock-in");
+    device.subscribe("TeamSwipe_ESP32/clock-out");
+    device.subscribe("TeamSwipe_ESP32/request-employee-earned");
   });
 
 device
   .on("message", function (topic, payload) {
     console.log('message', topic, payload.toString());
+
+    if (topic === "TeamSwipe_ESP32/request-employee-array") {
+      data = JSON.parse(payload);
+      UserData.findOne({ "company": data.email }, function (err, doc) {
+        sendData("TeamSwipe_ESP32/return-data", doc.employees)
+      });
+    }
+    if (topic === "TeamSwipe_ESP32/clock-in") {
+      const start = Date.now()
+      data = JSON.parse(payload);
+      UserData.findOneAndUpdate({ "company": data.email, "employees.name": data.name }, { $set: { "employees.$.working": true, "employees.$.startTime": start } }
+        , function (err, docs) {
+          if (err) {
+            console.log(err)
+          }
+        });
+      sendData("TeamSwipe_ESP32/return-employee-status", { status: true })
+    }
+
+    if (topic === "TeamSwipe_ESP32/clock-out") {
+      data = JSON.parse(payload);
+      const stop = Date.now()
+      UserData.findOne({ "company": data.email }, { "employees": { $elemMatch: { name: data.name } } }, function (err, doc) {
+        var time = ((stop - doc.employees[0].startTime) / 1000)
+        var payPerSec = (doc.employees[0].wage / 60) / 60
+        var pay = time * payPerSec
+        sendData("TeamSwipe_ESP32/return-employee-pay", { pay: pay, status: false })
+        var updatePay = doc.employees[0].totalPay
+        updatePay += pay
+        UserData.findOneAndUpdate({ "company": data.email, "employees.name": data.name }, { $set: { "employees.$.totalPay": updatePay, "employees.$.working": false } }
+          , function (err, docs) {
+            if (err) {
+              console.log(err)
+            }
+          });
+      });
+    }
+    if (topic === "TeamSwipe_ESP32/request-employee-earned") {
+      data = JSON.parse(payload);
+      UserData.findOne({ "company": data.email }, { "employees": { $elemMatch: { name: data.name } } }, function (err, doc) {
+        var total = doc.employees[0].totalPay
+        sendData("TeamSwipe_ESP32/return-employee-earned", { totalPay: total })
+      });
+    }
   });
 
 device
@@ -60,12 +110,9 @@ device
     console.log('Error:', topic, JSON.stringify(payload));
   });
 
-
-
 function sendData(topicName, data) {
-  console.log("STEP - Sending data to AWS  IoT Core: " + JSON.stringify(data))
-  console.log("---------------------------------------------------------------------------------")
-  return device.publish(topicName, JSON.stringify(data)) //  "signInEtc" in the topic
+  console.log("Sending data to AWS  IoT Core: ")
+  return device.publish(topicName, JSON.stringify(data))
 }
 
 router.get('/', function (req, res, next) {
@@ -75,7 +122,6 @@ router.get('/', function (req, res, next) {
 router.get('/get-data', authenticateToken, (req, res) => {
   UserData.findOne({ "company": req.email.email }, function (err, doc) {
     res.json(doc.employees);
-    sendData("TeamSwipe_ESP32/sub", doc.employees)
   });
 })
 
@@ -85,60 +131,6 @@ router.get('/get-presets', authenticateToken, (req, res) => {
   });
 })
 
-router.post('/insert', function (req, res, next) {
-  var item = {
-    company: req.body.email,
-    employees:
-      [{
-        name: req.body.name,
-        age: req.body.age,
-        role: req.body.role,
-        ppsn: req.body.ppsn,
-        wage: req.body.wage
-      }]
-  }
-
-
-  var data = new UserData(item);
-  data.save();
-  res.redirect('/');
-});
-
-router.post('/register', async (req, res, next) => {
-  try {
-    const hashedPassword = await bcrypt.hash(req.body.password, 10)
-    var user = await UserData.findOne({ "company": req.body.email });
-    console.log(user)
-    if (user == null) {
-      console.log("here top")
-      var item = {
-        company: req.body.email,
-        password: hashedPassword,
-        employees:
-          [{
-            name: req.body.name,
-            age: req.body.age,
-            role: req.body.role,
-            ppsn: req.body.ppsn,
-            wage: req.body.wage
-          }]
-      }
-      var data = new UserData(item);
-      data.save();
-
-      res.redirect('/');
-    }
-    else {
-      res.send('Username used')
-    }
-  }
-  catch
-  {
-    console.log("here")
-    res.status(500).send()
-  }
-});
-
 router.post('/insert-employee', authenticateToken, (req, res, next) => {
 
   UserData.findOneAndUpdate({ "company": req.email.email }, {
@@ -148,7 +140,10 @@ router.post('/insert-employee', authenticateToken, (req, res, next) => {
         age: req.body.age,
         role: req.body.role,
         ppsn: req.body.ppsn,
-        wage: req.body.wage
+        wage: req.body.wage,
+        working: false,
+        startTime: 0,
+        totalPay: 0
       }
     }
   }, function (err, docs) {
@@ -183,104 +178,6 @@ router.post('/delete-preset', authenticateToken, (req, res, next) => {
         console.log(err)
       }
     });
-  res.redirect('/');
-});
-
-router.post('/register', async (req, res, next) => {
-  try {
-    const hashedPassword = await bcrypt.hash(req.body.password, 10)
-    var user = await UserData.findOne({ "company": req.body.email });
-    console.log(user)
-    if (user == null) {
-      console.log("here top")
-      var item = {
-        company: req.body.email,
-        password: hashedPassword,
-        employees:
-          [{
-            name: req.body.name,
-            age: req.body.age,
-            role: req.body.role,
-            ppsn: req.body.ppsn,
-            wage: req.body.wage
-          }]
-      }
-      var data = new UserData(item);
-      data.save();
-
-      res.redirect('/');
-    }
-    else {
-      res.send('Username used')
-    }
-  }
-  catch
-  {
-    console.log("here")
-    res.status(500).send()
-  }
-});
-
-router.post('/insert-employee', authenticateToken, (req, res, next) => {
-
-  UserData.findOneAndUpdate({ "company": req.email.email }, {
-    $push: {
-      "employees": {
-        name: req.body.name,
-        age: req.body.age,
-        role: req.body.role,
-        ppsn: req.body.ppsn,
-        wage: req.body.wage
-      }
-    }
-  }, function (err, docs) {
-    if (err) {
-      console.log(err)
-    }
-  });
-  res.redirect('/');
-});
-
-router.post('/insert-preset', authenticateToken, (req, res, next) => {
-
-  UserData.findOneAndUpdate({ "company": req.email.email }, {
-    $push: {
-      "presets": {
-        role: req.body.role,
-        wage: req.body.wage
-      }
-    }
-  }, function (err, docs) {
-    if (err) {
-      console.log(err)
-    }
-  });
-  res.redirect('/');
-});
-
-router.post('/delete-preset', authenticateToken, (req, res, next) => {
-  UserData.findOneAndUpdate({ "company": req.email.email }, { $pull: { "presets": { "_id": req.body.id } } }
-    , function (err, docs) {
-      if (err) {
-        console.log(err)
-      }
-    });
-  res.redirect('/');
-});
-
-router.post('/update', function (req, res, next) {
-  var id = req.body.id;
-  UserData.findById(id, function (err, doc) {
-    if (err) {
-      console.error('error, no entry found');
-    }
-    doc.name = req.body.name
-    doc.age = req.body.age
-    doc.role = req.body.role
-    doc.ppsn = req.body.ppsn
-    doc.wage = req.body.wage
-    doc.save();
-  })
   res.redirect('/');
 });
 
@@ -294,9 +191,13 @@ router.post('/update-employee', authenticateToken, (req, res, next) => {
   res.redirect('/');
 });
 
-router.post('/delete', function (req, res, next) {
-  var id = req.body.id;
-  UserData.findByIdAndRemove(id).exec();
+router.post('/delete-employee', authenticateToken, (req, res, next) => {
+  UserData.findOneAndUpdate({ "company": req.email.email }, { $pull: { "employees": { "_id": req.body.id } } }
+    , function (err, docs) {
+      if (err) {
+        console.log(err)
+      }
+    });
   res.redirect('/');
 });
 
@@ -318,59 +219,6 @@ router.post('/delete-account', authenticateToken, (req, res) => {
       res.status(500).send()
     }
   });
-});
-
-router.post('/delete-employee', authenticateToken, (req, res, next) => {
-  UserData.findOneAndUpdate({ "company": req.email.email }, { $pull: { "employees": { "_id": req.body.id } } }
-    , function (err, docs) {
-      if (err) {
-        console.log(err)
-      }
-    });
-  res.redirect('/');
-});
-//Code is from the following tutorial: JWT Authentication Tutorial - Node.js. Code source: https://github.com/WebDevSimplified/JWT-Authentication
-function authenticateToken(req, res, next) {
-  const authHeader = req.headers['authorization']
-  const token = authHeader && authHeader.split(' ')[1]
-  if (token == null) return res.sendStatus(401)
-
-  jwt.verify(token, process.env.ACCESS_TOKEN, (err, email) => {
-    console.log(err)
-    if (err) return res.sendStatus(403)
-    req.email = email
-    next()
-  })
-}
-
-router.post('/delete-account', authenticateToken, (req, res) => {
-
-  UserData.findOne({ "company": req.email.email }, async (err, doc) => {
-    try {
-      if (await bcrypt.compare(req.body.password, doc.password)) {
-        var id = doc._id;
-        UserData.findByIdAndRemove(id).exec();
-        res.status(200).send()
-      }
-      else {
-        res.status(400).send('Not Allowed')
-      }
-    }
-    catch
-    {
-      res.status(500).send()
-    }
-  });
-});
-
-router.post('/delete-employee', authenticateToken, (req, res, next) => {
-  UserData.findOneAndUpdate({ "company": req.email.email }, { $pull: { "employees": { "_id": req.body.id } } }
-    , function (err, docs) {
-      if (err) {
-        console.log(err)
-      }
-    });
-  res.redirect('/');
 });
 //Code is from the following tutorial: JWT Authentication Tutorial - Node.js. Code source: https://github.com/WebDevSimplified/JWT-Authentication
 function authenticateToken(req, res, next) {

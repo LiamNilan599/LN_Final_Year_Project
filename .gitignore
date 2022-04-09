@@ -20,6 +20,10 @@ node/node_modules
 .DS_Store
 config.h
 /node/certificates
+AmazonRootCA1.pem
+86289fca2101af52f1e066a37a13b0a8cfd8590ca1d68a3c46c86d008d130f6d-public.pem.key
+86289fca2101af52f1e066a37a13b0a8cfd8590ca1d68a3c46c86d008d130f6d-private.pem.key
+86289fca2101af52f1e066a37a13b0a8cfd8590ca1d68a3c46c86d008d130f6d-certificate.pem.crt
 
 # debug
 npm-debug.log*
