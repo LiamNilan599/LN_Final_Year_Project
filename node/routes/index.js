@@ -19,7 +19,7 @@ var EmployeeSchema = new Schema({
   ppsn: String,
   wage: { type: Number },
   working: Boolean,
-  totalPay: Number,
+  totalPay: { type: Number },
   startTime: { type: Number }
 });
 var PresetSchema = new Schema({
@@ -35,7 +35,7 @@ var UserSchema = new Schema({
 }, { collection: 'user-data', versionKey: false });
 
 var UserData = mongoose.model('EmployeeData', UserSchema);
-
+//Code is from the following tutorial: Tutorial: Getting Started with Amazon AWS IoT, MQTT Protocol, and Node JS. Code source: https://medium.com/dev-jam/getting-started-with-aws-iot-core-and-mqtt-protocol-with-a-node-js-example-ed16bd542704
 let device = awsIot.device({
   keyPath: './certificates/86289fca2101af52f1e066a37a13b0a8cfd8590ca1d68a3c46c86d008d130f6d-private.pem.key',
   certPath: './certificates/86289fca2101af52f1e066a37a13b0a8cfd8590ca1d68a3c46c86d008d130f6d-certificate.pem.crt',
@@ -49,7 +49,6 @@ device
   .on('connect', function () {
     console.log("STEP - Connecting to AWS  IoT Core");
     console.log("---------------------------------------------------------------------------------")
-    device.subscribe("TeamSwipe_ESP32/pub");
     device.subscribe("TeamSwipe_ESP32/request-employee-array");
     device.subscribe("TeamSwipe_ESP32/clock-in");
     device.subscribe("TeamSwipe_ESP32/clock-out");
@@ -75,7 +74,6 @@ device
             console.log(err)
           }
         });
-      sendData("TeamSwipe_ESP32/return-employee-status", { status: true })
     }
 
     if (topic === "TeamSwipe_ESP32/clock-out") {
@@ -114,9 +112,8 @@ function sendData(topicName, data) {
   console.log("Sending data to AWS  IoT Core: ")
   return device.publish(topicName, JSON.stringify(data))
 }
-
+// end of tutorial code
 router.get('/', function (req, res, next) {
-  res.render('index');
 });
 
 router.get('/get-data', authenticateToken, (req, res) => {
@@ -143,7 +140,7 @@ router.post('/insert-employee', authenticateToken, (req, res, next) => {
         wage: req.body.wage,
         working: false,
         startTime: 0,
-        totalPay: 0
+        totalPay: 0.0
       }
     }
   }, function (err, docs) {

@@ -15,7 +15,10 @@ var EmployeeSchema = new Schema({
   age: String,
   role: String,
   ppsn: String,
-  wage: String
+  wage: { type: Number },
+  working: Boolean,
+  totalPay: { type: Number },
+  startTime: { type: Number }
 });
 
 var PresetSchema = new Schema({
@@ -52,16 +55,14 @@ app.delete('/logout', (req, res) => {
   res.sendStatus(204)
 })
 
-app.post('/login', async(req, res) => {
+app.post('/login', async (req, res) => {
   // Authenticate email
   var company = await UserData.findOne({ "company": req.body.email });
   if (company == null) {
     return res.status(400).send('Cannot find user')
   }
-  try 
-  {
-    if (await bcrypt.compare(req.body.password, company.password)) 
-    {
+  try {
+    if (await bcrypt.compare(req.body.password, company.password)) {
       const email = req.body.email
       const user = { email: email }
 
@@ -95,7 +96,10 @@ app.post('/register', async (req, res, next) => {
             age: req.body.age,
             role: req.body.role,
             ppsn: req.body.ppsn,
-            wage: req.body.wage
+            wage: req.body.wage,
+            working: false,
+            startTime: 0,
+            totalPay: 0.0
           }]
       }
       var data = new UserData(item);

@@ -87,12 +87,12 @@ export function EmployeesContextProvider(props) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(data)
-    });
-
-    setPresets((oldPresets) => {
-      let prevPresets = oldPresets
-      return prevPresets.concat(preset)
-    });
+    }).then(
+      setPresets((oldPresets) => {
+        let prevPresets = oldPresets
+        return prevPresets.concat(preset)
+      })
+    )
   }
 
   async function removePreset(presetId) {
@@ -106,11 +106,13 @@ export function EmployeesContextProvider(props) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(data)
-    });
-
-    setPresets((prevPresets) => {
-       return prevPresets.filter(preset => preset._id !== presetId);
-    });
+    })
+      .then
+      (
+        setPresets((prevPresets) => {
+          return prevPresets.filter(preset => preset._id !== presetId);
+        })
+      )
   }
 
   function getPresets() {
@@ -119,7 +121,7 @@ export function EmployeesContextProvider(props) {
 
   function clearPresets() {
     setPresets([]);
-}
+  }
 
   const context = {
     Employees: userEmployees,
@@ -131,7 +133,7 @@ export function EmployeesContextProvider(props) {
     addPreset: addPreset,
     getPresets: getPresets,
     removePreset: removePreset,
-    clearPresets : clearPresets
+    clearPresets: clearPresets
   };
 
   return (
